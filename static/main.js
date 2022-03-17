@@ -33,6 +33,7 @@ $('#letter-form').submit(function(e) {
   e.preventDefault();
 });
 
+//hangman drawing instance here
 function updateDrawing(errors) {
   $('#hangman-drawing').children().slice(0, errors.length).show();
 }

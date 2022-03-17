@@ -12,19 +12,23 @@ db = SQLAlchemy(app)
 
 # Model
 
+#session number (I think)
 def random_pk():
     return random.randint(1e9, 1e10)
 
+#pick word
 def random_word():
     words = [line.strip() for line in open('words.txt') if len(line) > 10]
     return random.choice(words).upper()
+
 
 class Game(db.Model):
     pk = db.Column(db.Integer, primary_key=True, default=random_pk)
     word = db.Column(db.String(50), default=random_word)
     tried = db.Column(db.String(50), default='')
     player = db.Column(db.String(50))
-
+    #player is gotten externally
+    
     def __init__(self, player):
         self.player = player
 
