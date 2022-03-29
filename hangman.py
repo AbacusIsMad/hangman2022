@@ -32,6 +32,9 @@ class Game(db.Model):
     def __init__(self, player):
         self.player = player
 
+    def __repr__(self):
+        return '%r' % self.player
+
     @property
     def errors(self):
         return ''.join(set(self.tried) - set(self.word))
