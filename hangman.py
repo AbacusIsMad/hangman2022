@@ -1,5 +1,5 @@
 import random
-
+import webbrowser
 import flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -10,6 +10,11 @@ app = flask.Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./hangman.db'
 db = SQLAlchemy(app)
 
+open = False
+while (open == False):
+    webbrowser.open_new('http://0.0.0.0:5000/')
+    open = True
+    
 # Model
 
 #session number (I think)
@@ -104,6 +109,7 @@ def play(game_id):
 
 # Main
 import os, sys
+
 def base_path(path):
     if getattr(sys, 'frozen', None):
     	basedir = sys._MEIPASS
@@ -112,6 +118,7 @@ def base_path(path):
     return os.path.join(basedir, path)
 
 if __name__ == '__main__':
-    os.chdir(base_path(''))
+    # os.chdir(base_path(''))
     app.run(host='0.0.0.0', debug=True)
+    
 
