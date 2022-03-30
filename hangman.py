@@ -7,7 +7,7 @@ app = flask.Flask(__name__)
 
 # Database
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hangman.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./hangman.db'
 db = SQLAlchemy(app)
 
 # Model
@@ -103,7 +103,15 @@ def play(game_id):
         return flask.render_template('play.html', game=game)
 
 # Main
+import os, sys
+def base_path(path):
+    if getattr(sys, 'frozen', None):
+    	basedir = sys._MEIPASS
+    else:
+    	basedir = os.path.dirname(__file__)
+    return os.path.join(basedir, path)
 
 if __name__ == '__main__':
+    os.chdir(base_path(''))
     app.run(host='0.0.0.0', debug=True)
 
