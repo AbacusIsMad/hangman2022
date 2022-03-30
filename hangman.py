@@ -10,10 +10,10 @@ app = flask.Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./hangman.db'
 db = SQLAlchemy(app)
 
-open = False
-while (open == False):
+gamer = False
+while (gamer == False):
     webbrowser.open_new('http://0.0.0.0:5000/')
-    open = True
+    gamer = True
     
 # Model
 
@@ -118,7 +118,7 @@ def base_path(path):
     return os.path.join(basedir, path)
 
 if __name__ == '__main__':
-    # os.chdir(base_path(''))
+    #os.chdir(base_path(''))
     app.run(host='0.0.0.0', debug=True)
     
 
