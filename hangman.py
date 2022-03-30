@@ -82,11 +82,15 @@ def home():
     games = sorted(
         [game for game in Game.query.all() if game.won],
         key=lambda game: -game.points)[:10]
+
     return flask.render_template('home.html', games=games)
 
 @app.route('/play')
 def new_game():
     player = flask.request.args.get('player')
+    first_letter = ord(player[0])
+    if not ((65 <= first_letter <= 90) or (97 <= first_letter <= 122)):
+    	return flask.redirect(flask.url_for('home'))
     game = Game(player)
     db.session.add(game)
     db.session.commit()
