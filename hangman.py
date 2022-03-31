@@ -1,4 +1,5 @@
 import random
+import threading
 import webbrowser
 import flask
 import time
@@ -11,10 +12,9 @@ app = flask.Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./hangman.db'
 db = SQLAlchemy(app)
 
-gamer = False
-while (gamer == False):
-    webbrowser.open_new('http://0.0.0.0:5000/')
-    gamer = True
+
+
+
     
 # Model
 
@@ -80,18 +80,38 @@ class Game(db.Model):
 @app.route('/')
 def home():
     games = sorted(
-        [game for game in Game.query.all() if game.won],
+    #bro uses lambda function to further confuse code lmao
+        [game for game in Game.query.all()],
         key=lambda game: -game.points)[:10]
+        #based lambda returns game points as the sorting method
+    print (sorted([game for game in Game.query.all()], key=(lambda game: -game.points)))
+    #if game.won
+    
+    #testinglol = Game.query.filter_by(player="josh").limit(1).first()
+    #print(testinglol)
 
     return flask.render_template('home.html', games=games)
 
 @app.route('/play')
 def new_game():
     player = flask.request.args.get('player')
-    first_letter = ord(player[0])
-    if not ((65 <= first_letter <= 90) or (97 <= first_letter <= 122)):
+    player = player.strip()
+    
+    #checking if the name is valid - letters only, no spaces or symbols.
+    valid = 1
+    for i in range(len(player)):
+        if not ((65 <= ord(player[i]) <= 90) or (97 <= ord(player[i]) <= 122)):
+            valid = 0
+    if valid == 0:
     	return flask.redirect(flask.url_for('home'))
-    game = Game(player)
+
+    #check for past logins:
+    past_player = Game.query.filter_by(player=player).limit(1).first()
+    if (past_player is not None):
+        print("player already exists!", past_player)
+        game = past_player
+    else:
+        game = Game(player)
     db.session.add(game)
     db.session.commit()
     return flask.redirect(flask.url_for('play', game_id=game.pk))
@@ -123,7 +143,8 @@ def base_path(path):
     return os.path.join(basedir, path)
 
 if __name__ == '__main__':
-    #os.chdir(base_path(''))
-    app.run(host='0.0.0.0', debug=True)
+    os.chdir(base_path(''))
+    threading.Timer(1.5, lambda: webbrowser.open('http://0.0.0.0:5000/')).start()
+    app.run(host='0.0.0.0', debug=False)
     
 
