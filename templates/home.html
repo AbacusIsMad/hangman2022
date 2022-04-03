@@ -24,10 +24,19 @@
           <tr>
             <td>{{ loop.index }}</td>
             <td>{{ game.player }}</td>
-            <td class="text-success">{{ game.current }}</td>
-            <td class="text-danger spaced">{{ game.errors }}</td>
-            <td>{{ game.points }}</td>
+	    <!--<td class="text-success">{{ game.currentcpy }}</td>-->
+	    <td>
+		{% for c in game.currentcpy %}{% if c == c.upper() %}<span class="text-success">{{c}}</span>{% endif %}{% if c != c.upper() %}<span style="color:#DD5222">{{c.upper()}}</span>{% endif %}{% endfor %}
+	    </td>
+            <td class="text-danger spaced">{{ game.errorscpy }}</td>
+            <td>{{ game.pointscpy }}</td>
         {% endfor %}
     </table>
   </div>
+  <!--div>
+      <span>Hello</span>
+      <span src="{{ url_for('bcontent') }}"></span>
+      <iframe frameborder="0" noresize="noresize"
+      style='background: transparent; width: 100%; height:100%; border:1px solid black' src="{{ url_for('bcontent')}}"></iframe>
+  </div-->
 {% endblock %}
