@@ -53,9 +53,37 @@
         <input class="input-lg text-uppercase" maxlength="1" size="1"
                name="letter" autocomplete="off" autofocus>
       </div>
-      <button type="submit" class="btn btn-default btn-lg">Try letter</button>
+      <button id="btn" type="submit" class="btn btn-default btn-lg" onclick="refresher()">Try letter</button>
     </form>
   {% endif %}
+
+  <iframe id="iframe" frameborder="0" noresize="noresize"
+  style='background: transparent; width: 100%; height:100%; 
+  border:1px solid black' src="{{ url_for('bcontent', _=current_time)}}"></iframe>
+  <script>
+  //refresh();
+  var cssLink = document.createElement("link");
+  cssLink.href = "timer.css"; 
+  cssLink.rel = "stylesheet"; 
+  cssLink.type = "text/css"; 
+  frames['iframe'].document.head.appendChild(cssLink);
+  var flag = 0;
+  function refresher() {
+  	if (flag == 1) return; 
+  	flag = 1;
+  	refresh();
+  }
+
+  async function refresh() {
+  //reload timer every second. This also moves the python variable forward!
+  iframe.innerHTML = "Loading...";
+  iframe.src = "{{ url_for('bcontent', _=current_time)}}";
+  
+  setTimeout(refresh, 1000);
+  }
+  
+
+  </script>
 {% endblock %}
 
 {% block bottom %}

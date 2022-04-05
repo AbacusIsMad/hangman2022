@@ -24,7 +24,7 @@ Create dabase with:
     
 # Compilation
 
-    pyinstaller --onefile --add-data 'templates:templates' --add-data 'static:static' --add-data 'hangman.db:.' --add-data 'words.txt:.' hangman.py
+    pyinstaller --onefile --add-data 'templates:templates' --add-data 'static:static' --add-data 'words.txt:.' hangman.py
 
 # Links
 
