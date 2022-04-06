@@ -290,6 +290,9 @@ def bcontent():
 
 #based
 def based_path(path):
+    if (__file__ == "hangman.py"):
+        print("it is in development!")
+        return "."
     if getattr(sys, 'frozen', None):
     	basedir = sys._MEIPASS
     else:
@@ -298,8 +301,8 @@ def based_path(path):
 
 
 if __name__ == '__main__':
-    #changes directory
-    #os.chdir(based_path(''))
+    #changes directory if in production
+    os.chdir(based_path(''))
 
 
     #kill port 5000
