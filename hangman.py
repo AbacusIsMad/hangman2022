@@ -34,9 +34,10 @@ if __name__ == '__main__':
     
     db = SQLAlchemy(app)
 
-
+#timer
 global i
 i = 0
+#timer controls
 global a
 a = 0
 
@@ -67,6 +68,7 @@ class Game(db.Model):
     taken = db.Column(db.String(50), default='')
     takenhidden = db.Column(db.Integer, default = 0)
     ongoing = db.Column(db.Integer, default = 0)
+    difficulty = db.Column(db.Integer, default = 0)
     
     """also store word and tried in a copied location. The server should display the copied ones.
     the copy is only updated if the game is finished and redirected to home.
@@ -181,6 +183,10 @@ def home():
     #whatever I return here, I can use in frontend.
     return flask.render_template('home.html', games=games)
 
+@app.route('/instructions')
+def instructions():
+    return flask.render_template('instructions.html')
+
 @app.route('/play')
 def new_game():
     #reset timer
@@ -194,6 +200,13 @@ def new_game():
         if not ((65 <= ord(player[k]) <= 90) or (97 <= ord(player[k]) <= 122)):
             return flask.redirect(flask.url_for('home'))
 
+    #go to difficulty select page
+    return flask.redirect(flask.url_for('options', player=player))
+    
+    
+@app.route('/nearly/<player>')
+def nearly(player):
+
     #check for past logins:
     past_player = Game.query.filter_by(player=player).limit(1).first()
     if (past_player is not None):
@@ -202,7 +215,8 @@ def new_game():
         #resets streak if cheating is detected part 2
         if ((game.tried != game.triedcpy) and (game.tried != '') and (game.ongoing == 1)):
             game.streak = 0
-        
+    
+
         #reroll random word for new game, and reset the game status as well. 
         #(resetting word and tried should do it.)
         game.word = random_word()
@@ -216,12 +230,29 @@ def new_game():
     db.session.commit()
     return flask.redirect(flask.url_for('play', game_id=game.pk))
 
+
+
+@app.route('/options/<player>', methods=['GET', 'POST'])
+def options(player):
+    difficulty = 0
+    if flask.request.method == 'POST':
+        difficulty = int(flask.request.form['select'])
+        if difficulty == -1:
+            return flask.redirect(flask.url_for('nearly', player=player))
+        print("difficulty is ", difficulty)
+        return flask.render_template('options.html', difficulty=difficulty)
+    elif flask.request.method == 'GET':
+        pass
+        #return flask.redirect(flask.url_for('temp', player=player))
+    #return flask.redirect(flask.url_for('options', player=player))
+    return flask.render_template('options.html', a=a)
+    
+
+#@app.route('/play/<game_id>/<a>', methods=['GET', 'POST'])
 @app.route('/play/<game_id>', methods=['GET', 'POST'])
-@app.route('/play/<game_id>/<a>', methods=['GET', 'POST'])
 def play(game_id):
     #game_id is the first entry thus don't need to be done.
     game = Game.query.get_or_404(game_id)
-    
     
     if flask.request.method == 'POST':
         global i
@@ -280,8 +311,11 @@ def bcontent():
     print("timer ", a)
     i += a
     mins, secs = divmod((i), 60)
-    small = ["{:02d}:{:02d}".format(mins, secs)]
-    return flask.Response(small)
+    small = "{:02d}:{:02d}".format(mins, secs)
+    #return flask.Response(small)
+    #pass small to render time, pass i to decide which color it is. I also have to pass difficulty here too.
+    #maybe also show the time bonus?
+    return flask.render_template('timer.html', i=i, small=small)
 
 
 
