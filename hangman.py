@@ -183,6 +183,14 @@ def home():
     #whatever I return here, I can use in frontend.
     return flask.render_template('home.html', games=games)
 
+
+@app.route('/database')
+def database():
+    games = sorted(
+        [game for game in Game.query.all() if (game.wordcpy != '')],
+        key=lambda game: -game.pointscpy)[:10]
+    return flask.render_template('database.html', games=games)
+
 @app.route('/instructions')
 def instructions():
     return flask.render_template('instructions.html')
