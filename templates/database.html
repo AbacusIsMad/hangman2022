@@ -3,17 +3,18 @@
 {% block content %}
 <div class="panel panel-default vspace">
     <form method="post">
-	<div class="panel-heading">Top 10</div>
+	<div class="panel-heading"><button type="submit" name="select" value="-1" style="padding:3px; border:none {% if recent %}; background:red {% endif %}">{% if recent %}Recent{% else %}Top{% endif %} 10</button></div>
 	<table class="table">
 		<thead>
+		<!--hello, lastReq-->
 			<tr>
-				<th><button type="submit" name="select" value="2" style="padding:0; border:none">#</button></th>
-				<th><button type="submit" name="select" value="3" style="padding:0; border:none">Player</button></th>
-				<th><button type="submit" name="select" value="5" style="padding:0; border:none">Word</button></th>
-				<th><button type="submit" name="select" value="7" style="padding:0; border:none">Errors</button></th>
-				<th><button type="submit" name="select" value="11" style="padding:0; border:none">Scoring</button></th>
-				<th><button type="submit" name="select" value="13" style="padding:0; border:none">Time</button></th>
-				<th><button type="submit" name="select" value="17" style="padding:0; border:none">Streak</button></th>
+				<th>#</th>
+				<th><button type="submit" name="select" value="2" style="padding:0; border:none">Player</button> {% if hello == 2 %}{% if lastReq == hello %}&#x25b4{% else %}&#x25be{% endif %}{% endif %}</th>
+				<th><button type="submit" name="select" value="3" style="padding:0; border:none">Word</button> {% if hello == 3 %}{% if lastReq == hello %}&#x25b4{% else %}&#x25be{% endif %}{% endif %}</th>
+				<th><button type="submit" name="select" value="5" style="padding:0; border:none">Errors</button> {% if hello == 5 %}{% if lastReq == hello %}&#x25b4{% else %}&#x25be{% endif %}{% endif %}</th>
+				<th><button type="submit" name="select" value="7" style="padding:0; border:none">Scoring</button> {% if hello == 7 %}{% if lastReq == hello %}&#x25b4{% else %}&#x25be{% endif %}{% endif %}</th>
+				<th><button type="submit" name="select" value="11" style="padding:0; border:none">Time</button> {% if hello == 11 %}{% if lastReq == hello %}&#x25b4{% else %}&#x25be{% endif %}{% endif %}</th>
+				<th><button type="submit" name="select" value="13" style="padding:0; border:none">Streak</button> {% if hello == 13 %}{% if lastReq == hello %}&#x25b4{% else %}&#x25be{% endif %}{% endif %}</th>
 		<tbody>
 		{% for game in games %}
 			<tr>
@@ -23,12 +24,17 @@
 				<td>
 					<!--{% for c in game.currentcpy %}{% if c == c.upper() %}<span class="text-success">{{c}}</span>{% endif %}{% if c != c.upper() %}<span style="color:#DD5222">{{c.upper()}}</span>{% endif %}{% endfor %}-->
 				<!--then I found this in play.html lol-->
+				{% if recent %}
+				{% for letter in game.wordlatest %}<span class="
+          				text-{% if letter in game.triedlatest %}success{% else %}danger{% endif %}">{{ letter }}</span>{% endfor %}
+				{% else %}
 				{% for letter in game.wordcpy %}<span class="
           				text-{% if letter in game.triedcpy %}success{% else %}danger{% endif %}">{{ letter }}</span>{% endfor %}
+          		        {% endif %}
 				</td>
-				<td class="text-danger spaced">{{ game.errorscpy }}</td>
-				<td>{{ game.pointscpy }}</td>
-				<td>{{ game.taken }}</td>
+				<td class="text-danger spaced">{% if recent %}{{ game.errorslatest }}{% else %}{{ game.errorscpy }}{% endif %}</td>
+				<td>{% if recent %}{{ game.pointslatest }}{% else %}{{ game.pointscpy }}{% endif %}</td>
+				<td>{% if recent %}{{ game.takenlatest }}{% else %}{{ game.takencpy }}{% endif %}</td>
 				<td>
 				<span style="color:{% if ((game.streakhidden == 0) or (game.streak == 0)) %}#991400{% else %}#4D9900{% endif %}">
 				{{ game.streak }}</span>

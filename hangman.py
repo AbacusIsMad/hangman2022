@@ -45,9 +45,11 @@ global difficulty
 difficulty=0
 #Database sorting variables
 global lastReq
-lastReq = -1
+lastReq = 7
 global hello
-hello = 0
+hello = 7
+global recent
+recent = 0
 
 # Model
 
@@ -63,6 +65,7 @@ def random_word():
 
 
 class Game(db.Model):
+    #cpy stores highest score, latest stores latest score
     pk = db.Column(db.Integer, primary_key=True, default=random_pk)
     word = db.Column(db.String(50), default=random_word)
     tried = db.Column(db.String(50), default='')
@@ -73,10 +76,11 @@ class Game(db.Model):
     triedlatest = db.Column(db.String(50), default='')
     streak = db.Column(db.Integer, default = 0)
     streakhidden = db.Column(db.Integer, default = 0)
-    taken = db.Column(db.String(50), default='')
-    takenhidden = db.Column(db.Integer, default = 0)
+    takenlatest = db.Column(db.String(50), default='')
+    takenhiddenlatest = db.Column(db.Integer, default = 0)
+    takencpy = db.Column(db.String(50), default='')
+    takenhiddencpy = db.Column(db.Integer, default = 0)
     ongoing = db.Column(db.Integer, default = 0)
-    difficulty = db.Column(db.Integer, default = 0)
     
     """also store word and tried in a copied location. The server should display the copied ones.
     the copy is only updated if the game is finished and redirected to home.
@@ -96,6 +100,10 @@ class Game(db.Model):
     @property
     def errorscpy(self):
         return ''.join(set(self.triedcpy) - set(self.wordcpy))
+
+    @property
+    def errorslatest(self):
+        return ''.join(set(self.triedlatest) - set(self.wordlatest))
 
     @property
     def current(self):
@@ -131,10 +139,12 @@ class Game(db.Model):
         Might add difficulty into account, I'm not sure.
         """
 
-
     @property
     def pointscpy(self):
         return 100*(self.triedcpy != '') + 2*len(set(self.wordcpy)) + len(self.wordcpy) - 10*len(self.errorscpy)
+    @property
+    def pointslatest(self):
+        return 100*(self.triedlatest != '') + 2*len(set(self.wordlatest)) + len(self.wordlatest) - 10*len(self.errorslatest)
 
     # Play
 
@@ -193,6 +203,10 @@ def home():
 def database():
     global hello
     global lastReq
+    global recent
+    toggled = 0
+    #cope, seethe,
+    mald = ['cpy', 'latest']
     
     #Get the initial database table to display on the home screen, sorted using lamba = game.pointscpy
     games = sorted(
@@ -202,42 +216,48 @@ def database():
     #Depending on the column header clicked (E.g Score or Player), sorts the database alphabetically or numerically (depending on data type).
     #inverts the list if the same button is clicked again, much like normal database tables.
     if flask.request.method == 'POST':
-        hello = int(flask.request.form['select'])
-        if (lastReq%hello):
-            lastReq = 0
+        temp = int(flask.request.form['select'])
+        #toggle between highest score and most recent score for players
+        if (temp == -1):
+            recent = int(recent != 1)
+            toggled = 1
         else:
-            lastReq += hello
-        if hello == 2: #Prime numbers because we wanted unique moduli that wouldn't interfere with each other
+            hello = temp
+        
+        if ((lastReq % hello > 0)):
+            lastReq = 0
+        if (toggled == 0):
+            lastReq = lastReq + hello - (2 * hello * (lastReq == hello))
+        #print("hello: ", hello, "lastReq", lastReq)
+        #Prime numbers because we wanted unique moduli that wouldn't interfere with each other
+        #what a sigma solution
+        if hello == 2:
             games = sorted(
             [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: game.pointscpy, reverse=(lastReq%(2*hello)))[:10]
+            key=lambda game: game.player.lower(), reverse=(lastReq != hello))[:10]
         if hello == 3:
             games = sorted(
             [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: game.player, reverse=(lastReq%(2*hello)))[:10]
+            key=lambda game: getattr(game, "word" + mald[recent]), reverse=(lastReq != hello))[:10]
         if hello == 5:
             games = sorted(
             [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: game.wordcpy, reverse=(lastReq%(2*hello)))[:10]
+            key=lambda game: len(getattr(game, "errors" + mald[recent])), reverse=(lastReq != hello))[:10]
         if hello == 7:
             games = sorted(
             [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: game.errorscpy, reverse=(lastReq%(2*hello)))[:10]
+            key=lambda game: getattr(game, "points" + mald[recent]), reverse=(lastReq == hello))[:10]
         if hello == 11:
             games = sorted(
             [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: game.pointscpy, reverse=(lastReq%(2*hello)))[:10]
+            key=lambda game: getattr(game, "takenhidden" + mald[recent]), reverse=(lastReq != hello))[:10]
         if hello == 13:
             games = sorted(
             [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: game.taken, reverse=(lastReq%(2*hello)))[:10]
-        if hello == 17:
-            games = sorted(
-            [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: game.streak, reverse=(lastReq%(2*hello)))[:10]
+            key=lambda game: game.streak, reverse=(lastReq == hello))[:10]
     elif flask.request.method == 'GET':
         pass
-    return flask.render_template('database.html', games=games)
+    return flask.render_template('database.html', games=games, hello=hello, lastReq=lastReq, recent=recent)
 
 @app.route('/instructions')
 def instructions():
@@ -330,19 +350,20 @@ def play(game_id):
             print("a is", a)
             #word saving
             if (game.won or game.lost):
-                #update scoreboard
                 print("progress saved!")
+                #update word
                 game.wordlatest = game.word
                 game.triedlatest = game.tried
+                #update time taken
+                game.takenhiddenlatest = i
+                mins, secs = divmod(i, 60)
+                game.takenlatest = "{:02d}:{:02d}".format(mins, secs)                
                 if (game.points >= game.pointscpy):
                     game.wordcpy = game.word
                     game.triedcpy = game.tried
+                    game.takencpy = game.takenlatest
+                    game.takenhiddencpy = game.takenhiddenlatest
                 print(game.wordcpy, game.triedcpy)
-                
-                #update time taken
-                game.takenhidden = i
-                mins, secs = divmod(i, 60)
-                game.taken = "{:02d}:{:02d}".format(mins, secs)
                 
                 #update streak
                 if game.won:
