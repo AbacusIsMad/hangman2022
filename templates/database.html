@@ -2,17 +2,18 @@
 
 {% block content %}
 <div class="panel panel-default vspace">
+    <form method="post">
 	<div class="panel-heading">Top 10</div>
 	<table class="table">
 		<thead>
 			<tr>
-				<th>#</th>
-				<th>Player</th>
-				<th>Word</th>
-				<th>Errors</th>
-				<th>Score</th>
-				<th>Time</th>
-				<th>Streak</th>
+				<th><button type="submit" name="select" value="2" style="padding:0; border:none">#</button></th>
+				<th><button type="submit" name="select" value="3" style="padding:0; border:none">Player</button></th>
+				<th><button type="submit" name="select" value="5" style="padding:0; border:none">Word</button></th>
+				<th><button type="submit" name="select" value="7" style="padding:0; border:none">Errors</button></th>
+				<th><button type="submit" name="select" value="11" style="padding:0; border:none">Scoring</button></th>
+				<th><button type="submit" name="select" value="13" style="padding:0; border:none">Time</button></th>
+				<th><button type="submit" name="select" value="17" style="padding:0; border:none">Streak</button></th>
 		<tbody>
 		{% for game in games %}
 			<tr>
@@ -34,6 +35,7 @@
 				</td>
 		{% endfor %}
 	</table>
+	</form>
 </div>
 
 {% endblock %}

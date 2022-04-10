@@ -43,6 +43,11 @@ a = 0
 #difficulty
 global difficulty
 difficulty=0
+#Database sorting variables
+global lastReq
+lastReq = -1
+global hello
+hello = 0
 
 # Model
 
@@ -184,11 +189,54 @@ def home():
     return flask.render_template('home.html', games=games)
 
 
-@app.route('/database')
+@app.route('/database', methods = ['GET', 'POST'])
 def database():
+    global hello
+    global lastReq
+    
+    #Get the initial database table to display on the home screen, sorted using lamba = game.pointscpy
     games = sorted(
         [game for game in Game.query.all() if (game.wordcpy != '')],
-        key=lambda game: -game.pointscpy)[:10]
+        key=lambda game: game.pointscpy, reverse=True)[:10]
+    
+    #Depending on the column header clicked (E.g Score or Player), sorts the database alphabetically or numerically (depending on data type).
+    #inverts the list if the same button is clicked again, much like normal database tables.
+    if flask.request.method == 'POST':
+        hello = int(flask.request.form['select'])
+        if (lastReq%hello):
+            lastReq = 0
+        else:
+            lastReq += hello
+        if hello == 2: #Prime numbers because we wanted unique moduli that wouldn't interfere with each other
+            games = sorted(
+            [game for game in Game.query.all() if (game.wordcpy != '')],
+            key=lambda game: game.pointscpy, reverse=(lastReq%(2*hello)))[:10]
+        if hello == 3:
+            games = sorted(
+            [game for game in Game.query.all() if (game.wordcpy != '')],
+            key=lambda game: game.player, reverse=(lastReq%(2*hello)))[:10]
+        if hello == 5:
+            games = sorted(
+            [game for game in Game.query.all() if (game.wordcpy != '')],
+            key=lambda game: game.wordcpy, reverse=(lastReq%(2*hello)))[:10]
+        if hello == 7:
+            games = sorted(
+            [game for game in Game.query.all() if (game.wordcpy != '')],
+            key=lambda game: game.errorscpy, reverse=(lastReq%(2*hello)))[:10]
+        if hello == 11:
+            games = sorted(
+            [game for game in Game.query.all() if (game.wordcpy != '')],
+            key=lambda game: game.pointscpy, reverse=(lastReq%(2*hello)))[:10]
+        if hello == 13:
+            games = sorted(
+            [game for game in Game.query.all() if (game.wordcpy != '')],
+            key=lambda game: game.taken, reverse=(lastReq%(2*hello)))[:10]
+        if hello == 17:
+            games = sorted(
+            [game for game in Game.query.all() if (game.wordcpy != '')],
+            key=lambda game: game.streak, reverse=(lastReq%(2*hello)))[:10]
+    elif flask.request.method == 'GET':
+        pass
     return flask.render_template('database.html', games=games)
 
 @app.route('/instructions')
