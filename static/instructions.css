@@ -1,0 +1,36 @@
+/*
+Use . to reference classes, eg .popup refers to class="popup" in html
+Use # to reference id, eg. #popup-trigger1 referes to id="popup-trigger1".
+*/
+
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* The actual popup (appears on top) */
+/*
+.popup .popuptext {
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+  opacity: 0;
+  opacity 750ms ease-in-out;
+}*/
+
+svg {
+  position: relative;
+  left: 0;
+  top: 0;
+  z-index: 0;
+}
+

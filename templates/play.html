@@ -33,8 +33,9 @@
     </h3>
     <p>
       <a class="btn btn-default" href="{{ url_for('home') }}">Home</a>
+      <!--when new game is pressed it doesn't go through the difficulty select screen. It is kept.-->
       <a class="btn btn-primary"
-         href="{{ url_for('new_game') }}?player={{ game.player }}">
+         href="{{ url_for('nearly', player=game.player) }}?player={{ game.player }}"><!--new_game-->
         Play again
       </a>
     </p>
@@ -56,6 +57,8 @@
       <button id="btn" type="submit" class="btn btn-default btn-lg" onclick="refresher()">Try letter</button>
     </form>
   {% endif %}
+  
+  <h3>Difficulty: {{difficulty}}</h3>
 
   <iframe id="iframe" frameborder="0" noresize="noresize"
   style='background: transparent; width: 100%; height:100%; 

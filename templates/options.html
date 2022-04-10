@@ -1,3 +1,7 @@
+{% extends 'index2.html' %}
+
+{% block content %}
+
 <form method="post">
 <button type="submit" name="select" value="0" {% if difficulty == 0 %}style="background-color:red"{% endif %}>Easy</button>
 <button type="submit" name="select" value="1" {% if difficulty == 1 %}style="background-color:red"{% endif %}>Normal</button>
@@ -10,3 +14,5 @@
 <input type="submit" name="select" value="2"-->
 <span>{{difficulty}}</span>
 </form>
+
+{% endblock %}

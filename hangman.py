@@ -40,6 +40,9 @@ i = 0
 #timer controls
 global a
 a = 0
+#difficulty
+global difficulty
+difficulty=0
 
 # Model
 
@@ -161,7 +164,6 @@ def home():
     global i
     i = 0
     
-    #TODO: move this somewhere else and display it using an iframe. Use buttons to customise how it is sorted.
     games = sorted(
     #bro uses lambda function to further confuse code lmao
         [game for game in Game.query.all() if (game.wordcpy != '')],
@@ -177,8 +179,6 @@ def home():
         #based lambda returns game points as the sorting method
     print (sorted([game for game in Game.query.all()], key=(lambda game: -game.pointscpy)))
     #if game.won
-    
-
 
     #whatever I return here, I can use in frontend.
     return flask.render_template('home.html', games=games)
@@ -231,7 +231,8 @@ def nearly(player):
         game.tried = ''
     else: #create new player object
         game = Game(player)
-
+    global i
+    i = 0
     
     db.session.add(game)
     game.ongoing = 1
@@ -242,18 +243,21 @@ def nearly(player):
 
 @app.route('/options/<player>', methods=['GET', 'POST'])
 def options(player):
-    difficulty = 0
+    global difficulty
+    #difficulty persists across different sessions
     if flask.request.method == 'POST':
-        difficulty = int(flask.request.form['select'])
-        if difficulty == -1:
+        if int(flask.request.form['select']) != -1:
+            difficulty = int(flask.request.form['select'])
+        else:
             return flask.redirect(flask.url_for('nearly', player=player))
+        
         print("difficulty is ", difficulty)
         return flask.render_template('options.html', difficulty=difficulty)
     elif flask.request.method == 'GET':
         pass
         #return flask.redirect(flask.url_for('temp', player=player))
     #return flask.redirect(flask.url_for('options', player=player))
-    return flask.render_template('options.html', a=a)
+    return flask.render_template('options.html', difficulty=difficulty)
     
 
 #@app.route('/play/<game_id>/<a>', methods=['GET', 'POST'])
@@ -261,14 +265,19 @@ def options(player):
 def play(game_id):
     #game_id is the first entry thus don't need to be done.
     game = Game.query.get_or_404(game_id)
+    global a
+    global i
+    global difficulty
+    print("difficulty is in play:", difficulty)
+    if len(game.tried) == 0:
+        i = 0
+        a = 0
     
     if flask.request.method == 'POST':
-        global i
         letter = flask.request.form['letter'].upper()
         if len(letter) == 1 and letter.isalpha():
             print(letter)
             game.try_letter(letter)
-            global a
             a = int(((len(game.tried) != 0) and not (game.won or game.lost)))
             print("a is", a)
             #word saving
@@ -308,7 +317,7 @@ def play(game_id):
                              errors=game.errors,
                              finished=game.finished)
     else: 
-        return flask.render_template('play.html', game=game)
+        return flask.render_template('play.html', game=game, difficulty=difficulty)
 
 
 #timer
@@ -346,20 +355,18 @@ if __name__ == '__main__':
     #changes directory if in production
     os.chdir(based_path(''))
 
-
     #kill port 5000
-    port = 5000
+    port = 42069
     process = subprocess.Popen(["lsof", "-i", ":{0}".format(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     for process in str(stdout.decode("utf-8")).split("\n")[1:]:
         data = [x for x in process.split(" ") if x != '']
         if (len(data) <=1):
             continue
-        
         os.kill(int(data[1]), signal.SIGKILL)
         print("port killed!")
 
     #wait a bit for game to load, then open browser.
-    threading.Timer(1.5, lambda: webbrowser.open("http://0.0.0.0:5000")).start()
+    threading.Timer(1.5, lambda: webbrowser.open("http://0.0.0.0:" + str(port))).start()
     #port = int(os.environ.get('PORT', 5000))
-    running = app.run(host='0.0.0.0', debug=False)
+    running = app.run(host='0.0.0.0', port=port, debug=False)
