@@ -1,0 +1,67 @@
+Help on package flask:
+
+NNAAMMEE
+    flask
+
+DDEESSCCRRIIPPTTIIOONN
+    flask
+    ~~~~~
+    
+    A microframework based on Werkzeug.  It's extensively documented
+    and follows best practice patterns.
+    
+    :copyright: 2010 Pallets
+    :license: BSD-3-Clause
+
+PPAACCKKAAGGEE  CCOONNTTEENNTTSS
+    __main__
+    _compat
+    app
+    blueprints
+    cli
+    config
+    ctx
+    debughelpers
+    globals
+    helpers
+    json (package)
+    logging
+    sessions
+    signals
+    templating
+    testing
+    views
+    wrappers
+
+FFUUNNCCTTIIOONNSS
+    eessccaappee(...)
+        escape(s) -> markup
+        
+        Convert the characters &, <, >, ', and " in string s to HTML-safe
+        sequences.  Use this if you need to display text that might contain
+        such characters in HTML.  Marks return value as markup string.
+
+DDAATTAA
+    aappppccoonntteexxtt__ppooppppeedd = <blinker.base.NamedSignal object at 0x7f7c8ef60700...
+    aappppccoonntteexxtt__ppuusshheedd = <blinker.base.NamedSignal object at 0x7f7c8ef606a0...
+    aappppccoonntteexxtt__tteeaarriinngg__ddoowwnn = <blinker.base.NamedSignal object at 0x7f7c8e...
+    bbeeffoorree__rreennddeerr__tteemmppllaattee = <blinker.base.NamedSignal object at 0x7f7c8ef...
+    ccuurrrreenntt__aapppp = <LocalProxy unbound>
+    gg = <LocalProxy unbound>
+    ggoott__rreeqquueesstt__eexxcceeppttiioonn = <blinker.base.NamedSignal object at 0x7f7c8ef6...
+    jjssoonn__aavvaaiillaabbllee = <flask._compat._DeprecatedBool object>
+    mmeessssaaggee__ffllaasshheedd = <blinker.base.NamedSignal object at 0x7f7c8ef607f0; ...
+    rreeqquueesstt = <LocalProxy unbound>
+    rreeqquueesstt__ffiinniisshheedd = <blinker.base.NamedSignal object at 0x7f7c8ef549a0;...
+    rreeqquueesstt__ssttaarrtteedd = <blinker.base.NamedSignal object at 0x7f7c8ef547f0; ...
+    rreeqquueesstt__tteeaarriinngg__ddoowwnn = <blinker.base.NamedSignal object at 0x7f7c8ef54...
+    sseessssiioonn = <LocalProxy unbound>
+    ssiiggnnaallss__aavvaaiillaabbllee = True
+    tteemmppllaattee__rreennddeerreedd = <blinker.base.NamedSignal object at 0x7f7c8ef54760...
+
+VVEERRSSIIOONN
+    1.1.1
+
+FFIILLEE
+    /usr/lib/python3/dist-packages/flask/__init__.py
+

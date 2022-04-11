@@ -1,6 +1,21 @@
 {% extends 'index.html' %}
 
 {% block content %}
+<style>
+.container {
+  width: {{ 570 + (game.word|length > 14) * (game.word|length - 14) * 20 }}px;
+}
+
+.spaced {
+{% if game.word|length > 14 %}
+  letter-spacing: {{ 28 - game.word|length }}px;
+{% else %}
+  letter-spacing: 15px;
+{% endif %}
+}
+
+</style>
+  <body onload="refresher()">
   <svg width="250" height="230" id="drawing">
     <!-- Structure -->
     <line y1="220" y2="220" x1="10" x2="120" />
@@ -51,18 +66,19 @@
   {% if not game.finished %}
     <form method="post" id="letter-form" class="form-inline vspace">
       <div class="form-group">
-        <input class="input-lg text-uppercase" maxlength="1" size="1"
+        <input class="input-lg text-uppercase" id="letterinput" maxlength="1" size="1"
                name="letter" autocomplete="off" autofocus>
       </div>
-      <button id="btn" type="submit" class="btn btn-default btn-lg" onclick="refresher()">Try letter</button>
+      <button id="btn" type="submit" class="btn btn-default btn-lg">Try letter</button>
     </form>
   {% endif %}
   
   <h3>Difficulty: {{difficulty}}</h3>
 
   <iframe id="iframe" frameborder="0" noresize="noresize"
-  style='background: transparent; width: 100%; height:100%; 
-  border:1px solid black' src="{{ url_for('bcontent', _=current_time)}}"></iframe>
+  style="padding: 0; background: transparent; width: 60%; height: 100px; 
+  border:0px solid black;" src="{{ url_for('bcontent', _=current_time)}}"></iframe>
+  </body>
   <script>
   //refresh();
   var cssLink = document.createElement("link");
@@ -72,11 +88,10 @@
   frames['iframe'].document.head.appendChild(cssLink);
   var flag = 0;
   function refresher() {
-  	if (flag == 1) return; 
-  	flag = 1;
-  	refresh();
+    if (flag == 1) return; 
+    flag = 1;
+    setTimeout(refresh, 1000);
   }
-
   async function refresh() {
   //reload timer every second. This also moves the python variable forward!
   iframe.innerHTML = "Loading...";
@@ -84,8 +99,6 @@
   
   setTimeout(refresh, 1000);
   }
-  
-
   </script>
 {% endblock %}
 

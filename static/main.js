@@ -27,6 +27,17 @@ $('#letter-form').submit(function(e) {
           
         /* Update drawing */
         updateDrawing(data.errors);
+        
+        /*flicker if invalid letter*/
+        if (data.invalidLetter) {
+          var cell = document.getElementById("letterinput");
+          cell.style.border = "2px solid red";
+          setTimeout(function(){ cell.style.border = null }, 100);
+          setTimeout(function(){ cell.style.border = "2px solid red" }, 200);
+          setTimeout(function(){ cell.style.border = null }, 300);
+          setTimeout(function(){ cell.style.border = "2px solid red" }, 400);
+          setTimeout(function(){ cell.style.border = null }, 500);
+        }
       }
     }
   });

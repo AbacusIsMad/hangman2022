@@ -34,6 +34,13 @@ if __name__ == '__main__':
     
     db = SQLAlchemy(app)
 
+#globals() can see these names now
+def lent(item):
+    return len(item)
+
+def lenth(item):
+    return item
+
 #timer
 global i
 i = 0
@@ -50,8 +57,13 @@ global hello
 hello = 7
 global recent
 recent = 0
-
+#player input error
+global invalidPlayer
+invalidPlayer = 0
+global invalidLetter
+invalidLetter = 0
 # Model
+
 
 #session number - random but not really important
 def random_pk():
@@ -70,6 +82,7 @@ class Game(db.Model):
     word = db.Column(db.String(50), default=random_word)
     tried = db.Column(db.String(50), default='')
     player = db.Column(db.String(50))
+    playerlower = db.Column(db.String(50))
     wordcpy = db.Column(db.String(50), default='')
     triedcpy = db.Column(db.String(50), default='')
     wordlatest = db.Column(db.String(50), default='')
@@ -178,25 +191,26 @@ db.create_all()
 def home():
     global i
     i = 0
-    
-    games = sorted(
-    #bro uses lambda function to further confuse code lmao
-        [game for game in Game.query.all() if (game.wordcpy != '')],
-        key=lambda game: -game.pointscpy)[:10]
+    #invalid player check
+    m = 0;
+    global invalidPlayer
+    if invalidPlayer == 1:
+        m = 1
+    invalidPlayer = 0
         #displays everyone, if they have finished the game at least once, to prevent blanks
-    for bruh in games:
+    for bruh in Game.query.all():
         #resets streak if cheating is detected part 1
-        print(bruh.tried != bruh.triedcpy, bruh.tried != '', bruh.ongoing == 1)
-        if ((bruh.tried != bruh.triedcpy) and (bruh.tried != '') and (bruh.ongoing == 1)):
+        #print(bruh.tried != bruh.triedlatest, bruh.tried != '', bruh.ongoing == 1)
+        if ((bruh.tried != bruh.triedlatest) and (bruh.tried != '') and (bruh.ongoing == 1)):
             bruh.streak = 0
             bruh.ongoing = 0
             db.session.commit()
         #based lambda returns game points as the sorting method
-    print (sorted([game for game in Game.query.all()], key=(lambda game: -game.pointscpy)))
+    #print (sorted([game for game in Game.query.all()], key=(lambda game: -game.pointscpy)))
     #if game.won
 
     #whatever I return here, I can use in frontend.
-    return flask.render_template('home.html', games=games)
+    return flask.render_template('home.html', m = m)
 
 
 @app.route('/database', methods = ['GET', 'POST'])
@@ -205,13 +219,9 @@ def database():
     global lastReq
     global recent
     toggled = 0
-    #cope, seethe,
+    #cope
+    seethe = [0, 1, "playerlower", "word", 4, "errors", 6, "points", 8, 9, 10, "takenhidden", 12, "streak"]
     mald = ['cpy', 'latest']
-    
-    #Get the initial database table to display on the home screen, sorted using lamba = game.pointscpy
-    games = sorted(
-        [game for game in Game.query.all() if (game.wordcpy != '')],
-        key=lambda game: game.pointscpy, reverse=True)[:10]
     
     #Depending on the column header clicked (E.g Score or Player), sorts the database alphabetically or numerically (depending on data type).
     #inverts the list if the same button is clicked again, much like normal database tables.
@@ -223,40 +233,21 @@ def database():
             toggled = 1
         else:
             hello = temp
-        
+        #check if a different button is pressed
         if ((lastReq % hello > 0)):
             lastReq = 0
         if (toggled == 0):
             lastReq = lastReq + hello - (2 * hello * (lastReq == hello))
-        #print("hello: ", hello, "lastReq", lastReq)
+        print("hello: ", hello, "lastReq: ", lastReq)
         #Prime numbers because we wanted unique moduli that wouldn't interfere with each other
         #what a sigma solution
-        if hello == 2:
-            games = sorted(
-            [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: game.player.lower(), reverse=(lastReq != hello))[:10]
-        if hello == 3:
-            games = sorted(
-            [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: getattr(game, "word" + mald[recent]), reverse=(lastReq != hello))[:10]
-        if hello == 5:
-            games = sorted(
-            [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: len(getattr(game, "errors" + mald[recent])), reverse=(lastReq != hello))[:10]
-        if hello == 7:
-            games = sorted(
-            [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: getattr(game, "points" + mald[recent]), reverse=(lastReq == hello))[:10]
-        if hello == 11:
-            games = sorted(
-            [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: getattr(game, "takenhidden" + mald[recent]), reverse=(lastReq != hello))[:10]
-        if hello == 13:
-            games = sorted(
-            [game for game in Game.query.all() if (game.wordcpy != '')],
-            key=lambda game: game.streak, reverse=(lastReq == hello))[:10]
     elif flask.request.method == 'GET':
         pass
+    games = sorted(
+    [game for game in Game.query.all() if (game.wordcpy != '')],
+    key=lambda game: globals()["lent" + "h" * (hello != 5)]
+    (getattr(game, seethe[hello] + mald[recent] * (hello == 3 or hello == 5 or hello == 7 or hello == 11))),
+    reverse=(lastReq != hello) != (hello == 7 or hello == 13))[:10]
     return flask.render_template('database.html', games=games, hello=hello, lastReq=lastReq, recent=recent)
 
 @app.route('/instructions')
@@ -274,6 +265,8 @@ def new_game():
     #checking if the name is valid - letters only, no spaces or symbols.
     for k in range(len(player)):
         if not ((65 <= ord(player[k]) <= 90) or (97 <= ord(player[k]) <= 122)):
+            global invalidPlayer
+            invalidPlayer = 1
             return flask.redirect(flask.url_for('home'))
 
     #go to difficulty select page
@@ -299,6 +292,7 @@ def nearly(player):
         game.tried = ''
     else: #create new player object
         game = Game(player)
+        game.playerlower = game.player.lower()
     global i
     i = 0
     
@@ -336,18 +330,23 @@ def play(game_id):
     global a
     global i
     global difficulty
-    print("difficulty is in play:", difficulty)
+    global invalidLetter
+    #print("difficulty is in play:", difficulty)
     if len(game.tried) == 0:
         i = 0
         a = 0
+    invalidLetter = 0
     
     if flask.request.method == 'POST':
         letter = flask.request.form['letter'].upper()
         if len(letter) == 1 and letter.isalpha():
             print(letter)
+            temp = game.tried
             game.try_letter(letter)
+            if temp == game.tried:
+                invalidLetter = 1
             a = int(((len(game.tried) != 0) and not (game.won or game.lost)))
-            print("a is", a)
+            print("a: ", a, "invalidLetter: ", invalidLetter)
             #word saving
             if (game.won or game.lost):
                 print("progress saved!")
@@ -380,13 +379,15 @@ def play(game_id):
                 db.session.commit()
             else:
                 print("progress not yet saved")
-
+        else:
+            invalidLetter = 1        
     if flask.request.is_xhr:
+        print("parsing request!")
         return flask.jsonify(current=game.current,
                              errors=game.errors,
-                             finished=game.finished)
+                             finished=game.finished, invalidLetter=invalidLetter)
     else: 
-        return flask.render_template('play.html', game=game, difficulty=difficulty)
+        return flask.render_template('play.html', game=game, difficulty=difficulty, invalidLetter=invalidLetter)
 
 
 #timer
@@ -394,11 +395,9 @@ def play(game_id):
 def bcontent():
     global i
     global a
-    print("timer ", a)
     i += a
     mins, secs = divmod((i), 60)
     small = "{:02d}:{:02d}".format(mins, secs)
-    #return flask.Response(small)
     #pass small to render time, pass i to decide which color it is. I also have to pass difficulty here too.
     #maybe also show the time bonus?
     return flask.render_template('timer.html', i=i, small=small)
@@ -438,4 +437,5 @@ if __name__ == '__main__':
     #wait a bit for game to load, then open browser.
     threading.Timer(1.5, lambda: webbrowser.open("http://0.0.0.0:" + str(port))).start()
     #port = int(os.environ.get('PORT', 5000))
+    print(globals())
     running = app.run(host='0.0.0.0', port=port, debug=False)

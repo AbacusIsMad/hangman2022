@@ -2033,7 +2033,7 @@ pre code {
   width:58.33333333%
  }
  .col-md-6 {
-  width:80%
+  width:100% /*was 80%*/
  }
  .col-md-5 {
   width:41.66666667%
@@ -2156,7 +2156,7 @@ pre code {
   margin-left:33.33333333%
  }
  .col-md-offset-3 {
-  margin-left:10%
+  margin-left:0% /*was 10%*/
  }
  .col-md-offset-2 {
   margin-left:16.66666667%

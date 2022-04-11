@@ -1,54 +1,118 @@
 {% extends 'index.html' %}
 
 {% block content %}
-<!--{{ url_for('new_game') }}-->
-<form action="{{ url_for('new_game') }}" class="form-inline">
-	<div class="form-group vspace">
-		<input name="player" class="input-lg" required="required"
-			placeholder="Your name">
-		<button class="btn btn-primary btn-lg" type="submit">Play!</button>
-	</div>
-</form>
+<head>
+<style>
 
+.container {
+  width: 760px;
+}
+
+.iframe {
+  width: 1000px;
+}
+
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.popuptext {
+  visibility: visible;
+  opacity: 0;
+  width: 160px;
+  background-color: #633;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+.popuptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.popup .what {
+  opacity: 1;
+  -webkit-animation: fadeIn 500ms;
+  animation: fadeIn 500ms
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+
+.popup .what2 {
+  opacity: 0;
+  -webkit-animation: fadeOut 500ms;
+  animation: fadeOut 500ms
+}
+
+@-webkit-keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+
+@keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+</style>
+</head>
+
+<form action="{{ url_for('new_game') }}" class="form-inline popup">
+  <div class="form-group vspace">
+    <input name="player" class="input-lg" required="required"
+      placeholder="Your name">
+    <span class="popuptext{% if m == 1 %} what2{% endif %}" id="myPopup", onclick="negative('myPopup')">Player name must only contain letters!</span>
+      <button class="btn btn-primary btn-lg" type="submit">Play!</button>
+  </div>
+</form>
 <form action="{{ url_for('instructions') }}">
-	<button class="btn btn-primary btn-lg" type="submit">Instructions</button>
+  <div class="form-group vspace">
+    <button class="btn btn-primary btn-lg" type="submit">Instructions</button>
+  </div>
 </form>
 
-<!--<div class="panel panel-default vspace">
-	<div class="panel-heading">Top 10</div>
-	<table class="table">
-		<thead>
-			<tr>
-				<th>#</th>
-				<th>Player</th>
-				<th>Word</th>
-				<th>Errors</th>
-				<th>Score</th>
-				<th>Time</th>
-				<th>Streak</th>
-		<tbody>
-		{% for game in games %}
-			<tr>
-				<td>{{ loop.index }}</td>
-				<td>{{ game.player }}</td>
-				
-				<td>
-				{% for letter in game.wordcpy %}<span class="
-          				text-{% if letter in game.triedcpy %}success{% else %}danger{% endif %}">{{ letter }}</span>{% endfor %}
-				</td>
-				<td class="text-danger spaced">{{ game.errorscpy }}</td>
-				<td>{{ game.pointscpy }}</td>
-				<td>{{ game.taken }}</td>
-				<td>
-				<span style="color:{% if ((game.streakhidden == 0) or (game.streak == 0)) %}#991400{% else %}#4D9900{% endif %}">
-				{{ game.streak }}</span>
-				</td>
-		{% endfor %}
-	</table>
-</div>-->
+<iframe class="iframe" id="iframe" frameborder="0" noresize="noresize"
+  style="background: transparent; width: 100%; height:550px; 
+  border:0px solid black" src="{{ url_for('database')}}"></iframe>
+{% if m == 1 %}
+<script>
+positive("myPopup");
+setTimeout(function(){ negative("myPopup") }, 3000);
 
-<iframe id="iframe" frameborder="0" noresize="noresize"
-  style='background: transparent; width: 100%; height:550px; 
-  border:0px solid black' src="{{ url_for('database')}}"></iframe>
+function positive(item) {
+  var popup = document.getElementById(item);
+  popup.classList.add("what");
+  setTimeout(popup.classList.remove("what2"), 1000);
+}
+function negative(item) {
+  var popup = document.getElementById(item);
+  popup.classList.add("what2");
+  setTimeout(popup.classList.remove("what"), 1000);
+}
+</script>
+{% endif %}
+
 
 {% endblock %}
