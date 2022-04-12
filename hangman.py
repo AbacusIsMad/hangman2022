@@ -8,6 +8,7 @@ import os, sys
 import signal
 import subprocess
 import time
+import math
 
 
 file_path = ''
@@ -18,8 +19,6 @@ def base_path(path):
         os.makedirs(dir_path)
     global file_path
     file_path = os.path.join(dir_path, 'hangman.db')
-    #engine = create_engine('sqlite:///' + 'file_path')
-    #engine.connect(file_path)
     return dir_path
 
 if __name__ == '__main__':
@@ -30,6 +29,7 @@ if __name__ == '__main__':
     #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./hangman.db'
     
     #connect to deployment db
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + file_path
     
     db = SQLAlchemy(app)
@@ -75,6 +75,8 @@ def random_word():
     words = [line.strip() for line in open('words.txt') if len(line) > 10]
     return random.choice(words).upper()
 
+#g = [line.strip() for line in open('words.txt') if len(set(line)) > 13]
+#print(g) #max different letters = 14
 
 class Game(db.Model):
     #cpy stores highest score, latest stores latest score
@@ -133,6 +135,7 @@ class Game(db.Model):
     def points(self):
         #set() gives a set with no repetitions, basically the number of unique letters in the word.
         return 100*(self.tried != '') + 2*len(set(self.word)) + len(self.word) - 10*len(self.errors)
+        #return 100 + 2 * (14 - len(set(self.word)))
         """
         NEW SCORING SYSTEM
         has 4 factors: number of unique letters in words, proportion of those words that have been guessed,
