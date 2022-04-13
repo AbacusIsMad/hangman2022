@@ -1,141 +1,53 @@
-{% extends 'index2.html' %}
+{% extends 'index3.html' %}
 
 {% block content %}
 <head>
-  <link rel="stylesheet" type="text/css" href="static/instructions.css"/>
-<style>
-.btn {
-  background-color: #f4511e;
-  border: none;
-  color: white;
-  padding: 16px 32px;
-  text-align: center;
-  font-size: 16px;
-  margin: 4px 2px;
-  opacity: 0.6;
-  transition: 0.3s;
-}
-
-.btn:hover {opacity: 1}
-
-.fade {
-  opacity: 1;
-  transition: opacity .25s ease-in-out;
-  -moz-transition: opacity .25s ease-in-out;
-  -webkit-transition: opacity .25s ease-in-out;
-}
-
-.fade:hover {
-  opacity: 0.5;
-}
-
-/* Popup container */
-.popup {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-}
-
-/* The actual popup (appears on top) */
-.popuptext {
-  visibility: visible;
-  opacity: 0;
-  width: 160px;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 8px 0;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -80px;
-}
-
-/* Popup arrow */
-.popuptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #555 transparent transparent transparent;
-}
-
-/* popup visibility */
-.popup .what {
-  opacity: 1;
-  -webkit-animation: fadeIn 500ms;
-  animation: fadeIn 500ms
-}
-
-@-webkit-keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
-}
-
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity:1 ;}
-}
-
-.popup .what2 {
-  opacity: 0;
-  -webkit-animation: fadeOut 500ms;
-  animation: fadeOut 500ms
-}
-
-@-webkit-keyframes fadeOut {
-  from {opacity: 1;}
-  to {opacity: 0;}
-}
-
-@keyframes fadeOut {
-  from {opacity: 1;}
-  to {opacity: 0;}
-}
-
-
-</style>
+  <link rel="stylesheet" type="text/css" href="static/instructions.css">
 </head>
+
 <form action="{{ url_for('home') }}">
 <button class="btn btn-primary btn-lg" type="submit">Return</button>
 </form>
 <button onclick="alert('this is a popup!')">Lol</button>
 
-  <svg width="250" height="230" id="drawing">
+</div id="main_drawing" class="popup">
+  <svg width="250" height="230" id="drawing" onmouseover="positive('behind')" onclick="cycle()"  onmouseout="negative('behind'), stopcycle()">
     <!-- Structure -->
+    <g id="behind" class="invis100">
+      <line y1="220" y2="220" x1="10" x2="120" stroke="red" stroke-width="7"/>
+      <line y1="10" y2="220" x1="65" x2="65" stroke="red" stroke-width="7"/>
+      <line y1="10" y2="10" x1="65" x2="175" stroke="red" stroke-width="7"/>
+      <line y1="10" y2="40" x1="175" x2="175" stroke="red" stroke-width="7"/>
+    </g>
+    
     <line y1="220" y2="220" x1="10" x2="120" />
     <line y1="10" y2="220" x1="65" x2="65" />
     <line y1="10" y2="10" x1="65" x2="175" />
     <line y1="10" y2="40" x1="175" x2="175" />
 
-    <g id="hangman-drawing">
+
+    <g id="man" class="invis100">
       <circle cx="175" cy="55" r="15" />
       <ellipse cx="175" cy="115" rx="20" ry="45" />
       <line y1="150" y2="190" x1="162" x2="140" />
       <line y1="150" y2="190" x1="188" x2="210" />
       <line y1="80" y2="40" x1="162" x2="140" />
-      <line y1="80" y2="40" x1="188" x2="210" />
+      <line y1="80" y2="40" x1="188" x2="210"/>
     </g>
+    <!--g id="mang" class="invis100"-->
+      <g id="mang0" class="invis100"><circle cx="175" cy="55" r="15" /></g>
+      <g id="mang1" class="invis100"><ellipse cx="175" cy="115" rx="20" ry="45" /></g>
+      <g id="mang2" class="invis100"><line y1="150" y2="190" x1="162" x2="140" /></g>
+      <g id="mang3" class="invis100"><line y1="150" y2="190" x1="188" x2="210" /></g>
+      <g id="mang4" class="invis100"><line y1="80" y2="40" x1="162" x2="140" /></g>
+      <g id="mang5" class="invis100"><line y1="80" y2="40" x1="188" x2="210" /></g>
+    <!--/g-->
   </svg>
-  <div class="popup">
-  <span class="popuptext" id="myPopup">Popup text...</span>
-  <svg>
-    <g id="popimg0", opacity="0">
-      <circle cx="175" cy="55" r="17" fill="red"/>
-    </g>
-    <g onmouseover="positive('popimg0')" onclick="positive('myPopup')" onmouseout="negative('myPopup'), negative('popimg0')">
-      <circle cx="175" cy="55" r="15" />
-    </g>
-  </svg>
-  </div>
-<div class="popup" onclick="positive('word')">
+</div>
+
+
+<div class="popup">
   <h1 id="current" class="spaced">______</h1>
-  <span class="popuptext" id="word">words here</span>
 </div>
   <h2 class="vspace" id="errors">
     Errors (X/6):
@@ -151,6 +63,19 @@
 
 
 <button class="btn">Hover Over Me</button>
+<br>
+<div class="popup" style="width: 500px">
+  <span class="popuptext popuptext2" id="myPopup" style="z-index: -1">Popup text...</span>
+  <svg style="height: 40px">
+    <g id="popimg0", opacity="0">
+      <circle cx="50%" cy="50%" r="17" fill="red"/>
+    </g>
+    <g onmouseover="positive('popimg0')" onclick="positive('myPopup'), positive('man')" onmouseout="negative('myPopup'), negative('popimg0'), negative('man')">
+      <circle cx="50%" cy="50%" r="15" style="cursor: pointer"/>
+    </g>
+  </svg>
+</div>
+
 
 
 
@@ -159,28 +84,45 @@
 
 <script>
 // When the user clicks on <div>, open the popup
-function updateDrawingdemo(errors) {
-  $('#hangman-drawing').children().slice(0, errors.length).show();
-}
 function positive(item) {
   var popup = document.getElementById(item);
   popup.classList.add("what");
+  if (popup.classList.contains("popuptext")) {
+    popup.style.zIndex = "1";
+  }
   setTimeout(popup.classList.remove("what2"), 1000);
 }
 function negative(item) {
   var popup = document.getElementById(item);
-  popup.classList.add("what2");
+  if (popup.classList.contains("what")) {
+    popup.classList.add("what2");
+  }
+  if (popup.classList.contains("popuptext")) {
+    setTimeout(popup.style.zIndex = "-1", 1000);
+  }
   setTimeout(popup.classList.remove("what"), 1000);
 }
-function posimage(item) {
-  var popup = document.getElementById(item);
-  //popup.classList.add("show");
-  popup.classList.add("isvisible");
+
+
+//displays hanging animation
+var timer;
+var process;
+
+function cycle() {
+  timer = 1;
+  if (timer) {positive("mang0");}
+  setTimeout(function() {if (timer) {positive("mang1")} else return;}, 1000);
+  setTimeout(function() {if (timer) {positive("mang2")} else return;}, 2000);
+  setTimeout(function() {if (timer) {positive("mang3")} else return;}, 3000);
+  setTimeout(function() {if (timer) {positive("mang4")} else return;}, 4000);
+  setTimeout(function() {if (timer) {positive("mang5")} else return;}, 5000);
+  setTimeout(function() {negative("mang0"), negative("mang1"), negative("mang2"), negative("mang3"), negative("mang4"), negative("mang5")}, 6000);
 }
-function negimage(item) {
-  var popup = document.getElementById(item);
-  //popup.classList.remove("show");
-  popup.classList.remove("isvisible");
+
+function stopcycle() {
+  //e.preventDefault();
+  timer = 0
 }
+    
 </script>
 {% endblock %}

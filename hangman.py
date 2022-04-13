@@ -71,8 +71,8 @@ def random_pk():
 
 #pick word
 def random_word():
-    #TODO: insert difficulty into length of word here!
-    words = [line.strip() for line in open('words.txt') if len(line) > 10]
+    global difficulty
+    words = [line.strip() for line in open('words.txt') if len(line) > (10 - 3 * difficulty)]
     return random.choice(words).upper()
 
 #g = [line.strip() for line in open('words.txt') if len(set(line)) > 13]
@@ -426,7 +426,7 @@ if __name__ == '__main__':
     #changes directory if in production
     os.chdir(based_path(''))
 
-    #kill port 5000
+    #kill port
     port = 42069
     process = subprocess.Popen(["lsof", "-i", ":{0}".format(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
@@ -439,6 +439,7 @@ if __name__ == '__main__':
 
     #wait a bit for game to load, then open browser.
     threading.Timer(1.5, lambda: webbrowser.open("http://0.0.0.0:" + str(port))).start()
-    #port = int(os.environ.get('PORT', 5000))
     print(globals())
-    running = app.run(host='0.0.0.0', port=port, debug=False)
+    #app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host=os.getenv('IP', '0.0.0.0'), 
+        port=int(os.getenv('PORT', port)), debug=False)

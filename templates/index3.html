@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='main.css') }}">
+  </head>
+  <body>
+    <div class="container text-center">
+      <h1 class="popup fade" style="cursor: pointer" onclick="positive('text1')" onmouseout="negative('text1')">Hangman game</h1>
+      
+      <!--; border-left: 20px solid cyan; border-right: 20px solid red; border-bottom: 20px solid green; border-top: 20px solid blue-->
+      <div class="row vspace">
+        <div class="col-md-6 col-md-offset-3">
+          <span class="popuptext popuptext0" id="text1" style="z-index: -1; bottom: -30px">HOW TO PLAY HANGMAN:<br>Try to guess the word with a limited number of errors, in as short a time as possible!</span>
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+    {% block bottom %}{% endblock %}
+  </body>
+</html>

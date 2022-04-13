@@ -1,17 +1,42 @@
-/*
-Use . to reference classes, eg .popup refers to class="popup" in html
-Use # to reference id, eg. #popup-trigger1 referes to id="popup-trigger1".
-*/
+.btn {
+  background-color: #f4511e;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 16px;
+  margin: 4px 2px;
+  opacity: 0.6;
+  transition: 0.3s;
+}
 
+.btn:hover {opacity: 1}
+
+.fade {
+  opacity: 1;
+  transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+}
+
+.fade:hover {
+  opacity: 0.5;
+}
+
+.invis100 {
+  opacity: 0;
+}
+
+/* Popup container */
 .popup {
   position: relative;
   display: inline-block;
-  cursor: pointer;
 }
 
 /* The actual popup (appears on top) */
-/*
-.popup .popuptext {
+.popuptext {
+  visibility: visible;
+  opacity: 0;
   width: 160px;
   background-color: #555;
   color: #fff;
@@ -23,14 +48,74 @@ Use # to reference id, eg. #popup-trigger1 referes to id="popup-trigger1".
   bottom: 125%;
   left: 50%;
   margin-left: -80px;
-  opacity: 0;
-  opacity 750ms ease-in-out;
-}*/
+}
 
-svg {
-  position: relative;
-  left: 0;
-  top: 0;
-  z-index: 0;
+/* Popup arrows */
+.popuptext0::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid #555;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+.popuptext2::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* popup visibility */
+.popup .what {
+  opacity: 1;
+  -webkit-animation: fadeIn 500ms;
+  animation: fadeIn 500ms
+}
+
+.what {
+  opacity: 1;
+  -webkit-animation: fadeIn 500ms;
+  animation: fadeIn 500ms
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+
+.popup .what2 {
+  opacity: 0;
+  -webkit-animation: fadeOut 500ms;
+  animation: fadeOut 500ms
+}
+
+.what2 {
+  opacity: 0;
+  -webkit-animation: fadeOut 500ms;
+  animation: fadeOut 500ms
+}
+
+@-webkit-keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+
+@keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
 }
 
