@@ -72,7 +72,7 @@ def random_pk():
 #pick word
 def random_word():
     global difficulty
-    words = [line.strip() for line in open('words.txt') if len(line) > (10 - 3 * difficulty)]
+    words = [line.strip() for line in open('words.txt') if ((len(line) > (10 - 3 * difficulty)) & (len(line) < 13 - 3 * difficulty))]
     return random.choice(words).upper()
 
 #g = [line.strip() for line in open('words.txt') if len(set(line)) > 13]
