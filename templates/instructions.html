@@ -5,13 +5,8 @@
   <link rel="stylesheet" type="text/css" href="static/instructions.css">
 </head>
 
-<form action="{{ url_for('home') }}">
-<button class="btn btn-primary btn-lg" type="submit">Return</button>
-</form>
-<button onclick="alert('this is a popup!')">Lol</button>
-
 </div id="main_drawing" class="popup">
-  <svg width="250" height="230" id="drawing" onmouseover="positive('behind')" onclick="cycle()"  onmouseout="negative('behind'), stopcycle()">
+  <svg width="250" height="230" id="drawing" onmouseover="positive('behind')" onclick="initial(), cycle(), positive('myPopup3')" onmouseout="negative('behind'), negative('myPopup3'), stopcycle()">
     <!-- Structure -->
     <g id="behind" class="invis100">
       <line y1="220" y2="220" x1="10" x2="120" stroke="red" stroke-width="7"/>
@@ -44,15 +39,70 @@
     <!--/g-->
   </svg>
 </div>
-
-
 <div class="popup">
-  <h1 id="current" class="spaced">______</h1>
+  <span class="popuptext popuptext1" id="myPopup3" style="z-index: -1; bottom: 120px; left: -100px">When players guesses an incorrect letter that is not in the word, the error counter will increase and another element of the 'hangman' will appear.</span>
 </div>
-  <h2 class="vspace" id="errors">
+
+<div>
+  <h1 id="current" class="spaced">_________</h1>
+</div>
+<div style="position: absolute; top: 387px; left: 50%; transform: translate( -50%, -50% )">
+  <h1 id="currentp" class="spaced">P__AY_E_</h1>
+</div>
+
+<div id="errors" class="immune" style="position: relative">
+  <h2 class="vspace">
     Errors (X/6):
-    <span class="text-danger spaced">NOPE</span>
+    <span class="text-danger spaced" id="errorsc"></span>
   </h2>
+</div>
+<div id="errors1" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+  <h2 class="vspace">
+    Errors (1/6):
+    <span class="text-danger spaced" id="errorsc">S</span>
+  </h2>
+</div>
+<div id="errors2" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+  <h2 class="vspace">
+    Errors (2/6):
+    <span class="text-danger spaced" id="errorsc">RS</span>
+  </h2>
+</div>
+<div id="errors3" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+  <h2 class="vspace">
+    Errors (3/6):
+    <span class="text-danger spaced" id="errorsc">ERS</span>
+  </h2>
+</div>
+<div id="errors4" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+  <h2 class="vspace">
+    Errors (4/6):
+    <span class="text-danger spaced" id="errorsc">MERS</span>
+  </h2>
+</div>
+<div id="errors5" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+  <h2 class="vspace">
+    Errors (5/6):
+    <span class="text-danger spaced" id="errorsc">AMERS</span>
+  </h2>
+</div>
+<div id="errors6" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+  <h2 class="vspace">
+    Errors (6/6):
+    <span class="text-danger spaced" id="errorsc">GAMERS</span>
+  </h2>
+</div>
+
+<div>
+      <input class="input-lg text-uppercase" id="letterinput" maxlength="1" size="1"
+        name="letter" autocomplete="off" autofocus>
+    <button id="btn" class="btn" onclick="positive('myPopup4')" onmouseout="negative('myPopup4')">Try letter</button>
+    <div class="popup">
+      <span class="popuptext popuptext3" id="myPopup4" style="z-index: -1; bottom: -50px; left: 100px">Players start by guessing a letter in the input box - each blank line signifies a letter in the word. <br>When you have entered the first valid letter, the timer starts.</span>
+    </div>
+</div>
+
+
 
 <span class="fade">Gamer?</span>
 
@@ -76,7 +126,10 @@
   </svg>
 </div>
 
-
+<form action="{{ url_for('home') }}">
+<button class="btn btn-primary btn-lg" type="submit">Return</button>
+</form>
+<button onclick="alert('this is a popup!')">Lol</button>
 
 
 
@@ -94,7 +147,7 @@ function positive(item) {
 }
 function negative(item) {
   var popup = document.getElementById(item);
-  if (popup.classList.contains("what")) {
+  if (popup.classList.contains("what") || popup.classList.contains("immune")) {
     popup.classList.add("what2");
   }
   if (popup.classList.contains("popuptext")) {
@@ -106,22 +159,67 @@ function negative(item) {
 
 //displays hanging animation
 var timer;
-var process;
+var process = 0;
 
+function initial() {
+  process = 1;
+}
+
+//here we serve-a beutifufull spaghet-a
 function cycle() {
+  if (timer || !process) return;
   timer = 1;
-  if (timer) {positive("mang0");}
-  setTimeout(function() {if (timer) {positive("mang1")} else return;}, 1000);
-  setTimeout(function() {if (timer) {positive("mang2")} else return;}, 2000);
-  setTimeout(function() {if (timer) {positive("mang3")} else return;}, 3000);
-  setTimeout(function() {if (timer) {positive("mang4")} else return;}, 4000);
-  setTimeout(function() {if (timer) {positive("mang5")} else return;}, 5000);
-  setTimeout(function() {negative("mang0"), negative("mang1"), negative("mang2"), negative("mang3"), negative("mang4"), negative("mang5")}, 6000);
+  if (timer) {
+    positive("mang0"); 
+    negative("errors");
+    positive("errors1");
+    setTimeout(function() {if (timer) {
+      positive("mang1"); 
+      //document.getElementById("errors").innerHTML = "Errors (2/6): <span class='text-danger spaced' id='errorsc'>RS</span>"
+      negative("errors1");
+      positive("errors2");
+      setTimeout(function() {if (timer) {
+        positive("mang2"); 
+        //document.getElementById("errors").innerHTML = "Errors (3/6): <span class='text-danger spaced' id='errorsc'>ERS</span>"
+        negative("errors2");
+        positive("errors3");
+        setTimeout(function() {if (timer) {
+          positive("mang3");
+          //document.getElementById("errors").innerHTML = "Errors (4/6): <span class='text-danger spaced' id='errorsc'>MERS</span>" 
+          negative("errors3");
+          positive("errors4");
+          setTimeout(function() {if (timer) {
+            positive("mang4"); 
+            //document.getElementById("errors").innerHTML = "Errors (5/6): <span class='text-danger spaced' id='errorsc'>AMERS</span>"
+            negative("errors4");
+            positive("errors5");
+            setTimeout(function() {if (timer) {
+              positive("mang5"); 
+              //document.getElementById("errors").innerHTML = "Errors (6/6): <span class='text-danger spaced' id='errorsc'>GAMERS</span>"
+              negative("errors5");
+            positive("errors6");
+              setTimeout(function() {
+              negative("mang0"), negative("mang1"), negative("mang2"), negative("mang3"), negative("mang4"), negative("mang5"); 
+              positive("errors"), negative("errors1"), negative("errors2"), negative("errors3"), negative("errors4"), negative("errors5"), negative("errors6");
+              //document.getElementById("errors").innerHTML = "Errors (X/6): <span class='text-danger spaced' id='errorsc'></span>"
+              if (timer) {
+                timer = 0;
+                setTimeout(cycle, 1000);
+              } else return;}, 1000);
+            } else return;}, 1000);
+          } else return;}, 1000);
+        } else return;}, 1000);
+      } else return;}, 1000);
+    } else return;}, 1000);
+  } else return;
 }
 
 function stopcycle() {
-  //e.preventDefault();
+  negative("mang0"), negative("mang1"), negative("mang2"), negative("mang3"), negative("mang4"), negative("mang5");
+  positive("errors"), negative("errors1"), negative("errors2"), negative("errors3"), negative("errors4"), negative("errors5"), negative("errors6");
+  //document.getElementById("errors").innerHTML = "Errors (X/6): <span class='text-danger spaced' id='errorsc'></span>"
   timer = 0
+  process = 0
 }
     
 </script>

@@ -189,7 +189,6 @@ db.create_all()
 
 # Controller
 
-
 @app.route('/')
 def home():
     global i
@@ -214,7 +213,6 @@ def home():
 
     #whatever I return here, I can use in frontend.
     return flask.render_template('home.html', m = m)
-
 
 @app.route('/database', methods = ['GET', 'POST'])
 def database():
@@ -262,19 +260,21 @@ def new_game():
     #reset timer
     global i
     i = 0
+    global invalidPlayer
     player = flask.request.args.get('player')
     player = player.strip()
     
     #checking if the name is valid - letters only, no spaces or symbols.
     for k in range(len(player)):
         if not ((65 <= ord(player[k]) <= 90) or (97 <= ord(player[k]) <= 122)):
-            global invalidPlayer
+            invalidPlayer = 1
+            return flask.redirect(flask.url_for('home'))
+        if (k > 15):
             invalidPlayer = 1
             return flask.redirect(flask.url_for('home'))
 
     #go to difficulty select page
     return flask.redirect(flask.url_for('options', player=player))
-    
     
 @app.route('/nearly/<player>')
 def nearly(player):

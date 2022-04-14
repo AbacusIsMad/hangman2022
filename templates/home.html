@@ -5,7 +5,7 @@
 <style>
 
 .container {
-  width: 760px;
+  width: 800px;
 }
 
 .iframe {
@@ -79,7 +79,7 @@
 </style>
 </head>
 
-<form action="{{ url_for('new_game') }}" class="form-inline popup">
+<form action="{{ url_for('new_game') }}" class="form-inline popup" style="top: -20px">
   <div class="form-group vspace">
     <input name="player" class="input-lg" required="required"
       placeholder="Your name">
@@ -87,15 +87,17 @@
       <button class="btn btn-primary btn-lg" type="submit">Play!</button>
   </div>
 </form>
+<div style="position: relative; top: -20px">
 <form action="{{ url_for('instructions') }}">
   <div class="form-group vspace">
     <button class="btn btn-primary btn-lg" type="submit">Instructions</button>
   </div>
 </form>
+</div>
 
 <iframe class="iframe" id="iframe" frameborder="0" noresize="noresize"
-  style="background: transparent; width: 100%; height:550px; 
-  border:0px solid black" src="{{ url_for('database')}}"></iframe>
+  style="background: transparent; width: 100%; height: 500px; 
+  border:0px solid black; position: relative; top: -20px; overflow: hidden" src="{{ url_for('database')}}" scrolling="no"></iframe>
 {% if m == 1 %}
 <script>
 positive("myPopup");
