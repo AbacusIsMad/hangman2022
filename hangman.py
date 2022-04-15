@@ -9,6 +9,7 @@ import signal
 import subprocess
 import time
 import math
+import string
 
 
 file_path = ''
@@ -72,7 +73,14 @@ def random_pk():
 #pick word
 def random_word():
     global difficulty
-    words = [line.strip() for line in open('words.txt') if ((len(line) > (10 - 3 * difficulty)) & (len(line) < 13 - 3 * difficulty))]
+    secret = Game.query.filter_by(player=".secret").limit(1).first()
+    if (secret.ongoing == 0):
+        words = [line.strip() for line in open('words.txt') if ((len(line) > (10 - 3 * difficulty)) & (len(line) < 13 - 3 * difficulty))]
+    else: #shh
+        words = ""
+        for i in range(random.randint(11, 18)):
+            words += random.choice(string.ascii_letters)
+        return words.upper()
     return random.choice(words).upper()
 
 #g = [line.strip() for line in open('words.txt') if len(set(line)) > 13]
@@ -185,7 +193,12 @@ class Game(db.Model):
 
 #create table if it does not exist
 db.create_all()
-
+secret = Game.query.filter_by(player=".secret").limit(1).first()
+if (secret is None):
+    secretg = Game(".secret")
+    secretg.ongoing = 0
+    db.session.add(secretg)
+    db.session.commit()
 
 # Controller
 
@@ -253,10 +266,12 @@ def database():
 
 @app.route('/instructions', methods = ['GET', 'POST'])
 def instructions():
-    
-    #if flask.request.method == 'POST':
-        #temp = int(flask.request.form['select'])
-    return flask.render_template('instructions.html')
+    secret = Game.query.filter_by(player=".secret").limit(1).first()
+    if flask.request.method == 'POST':
+        if (int(flask.request.form['secret']) == 1):
+            secret.ongoing = int(secret.ongoing != 1)
+            db.session.commit()
+    return flask.render_template('instructions.html', secret=secret.ongoing)
 
 @app.route('/play')
 def new_game():
@@ -342,6 +357,7 @@ def play(game_id):
         i = 0
         a = 0
     invalidLetter = 0
+    secret = Game.query.filter_by(player=".secret").limit(1).first()
     
     if flask.request.method == 'POST':
         letter = flask.request.form['letter'].upper()
@@ -393,7 +409,7 @@ def play(game_id):
                              errors=game.errors,
                              finished=game.finished, invalidLetter=invalidLetter)
     else: 
-        return flask.render_template('play.html', game=game, difficulty=difficulty, invalidLetter=invalidLetter)
+        return flask.render_template('play.html', game=game, difficulty=difficulty, invalidLetter=invalidLetter, secret=secret.ongoing)
 
 
 #timer
@@ -443,7 +459,7 @@ if __name__ == '__main__':
 
     #wait a bit for game to load, then open browser.
     threading.Timer(1.5, lambda: webbrowser.open("http://0.0.0.0:" + str(port))).start()
-    print(globals())
+    #print(globals())
     #app.run(host='0.0.0.0', port=port, debug=False)
     app.run(host=os.getenv('IP', '0.0.0.0'), 
         port=int(os.getenv('PORT', port)), debug=False)

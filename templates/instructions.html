@@ -149,7 +149,9 @@
 <form action="{{ url_for('home') }}">
 <button class="btn btn-primary btn-lg" type="submit">Return</button>
 </form>
-
+<form method="post" style="position: absolute; top: 200px; left: 10px">
+  <button type="submit" name="secret" value="1" {% if secret %}style="background:red"{% endif %}>":OJM_@</button>
+</form>
 
 <!--span class="fade">Gamer?</span>
 

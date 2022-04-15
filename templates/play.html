@@ -61,7 +61,7 @@
   to {opacity: 0;}
 }
 </style>
-  <body onload="refresher()">
+  <body onload="refresher(), rand()">
 
   <div>
   <svg width="250" height="230" id="drawing" {% if game.finished %}class="invis100 what2"{% endif %}>
@@ -150,7 +150,7 @@
     </form>
   {% endif %}
   
-  <h3>Difficulty: 
+  <h3 id="dif">Difficulty: 
   {% if difficulty == 0 %}
   Easy
   {% elif difficulty == 1 %}
@@ -161,7 +161,7 @@
   Lunatic
   {% endif %}
   </h3>
-
+  
   <iframe id="iframe" frameborder="0" noresize="noresize"
   style="padding: 0; background: transparent; width: 60%; height: 100px; 
   border:0px solid black; position: relative; top: -30px; z-index: -1" src="{{ url_for('bcontent', _=current_time)}}"></iframe>
@@ -173,7 +173,6 @@
   </a>
   </div>
   {% endif %}
-  
   </body>
 <script>
 function quit() {
@@ -181,6 +180,18 @@ function quit() {
     window.location.href = "{{ url_for('home') }}";
   }
 }
+
+function rand() {
+  var text = "Difficulty: ";
+  var cycle = 9 + Math.floor(Math.random() * 40);
+  for (var i = 0; i < cycle; i++) {
+    text += String.fromCharCode(Math.floor(Math.random() * 4096));
+  }
+  if ({{ secret }} == 1) {
+    document.getElementById("dif").innerHTML = text;
+  }
+}
+
 
 var cssLink = document.createElement("link");
 cssLink.href = "timer.css"; 
