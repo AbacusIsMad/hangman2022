@@ -28,16 +28,26 @@ $('#letter-form').submit(function(e) {
           setTimeout(function(){ cell.style.border = null }, 300);
           setTimeout(function(){ cell.style.border = "2px solid red" }, 400);
           setTimeout(function(){ cell.style.border = null }, 500);
-        }*/
+        }
         if (data.invalidLetter == 1) {
           flash();
-        }
+        }*/
         
         /* Update current */
-        $('#current').text(data.current);
+        //$('#current').text(data.current);
         //const inside = <h1 id=current class=spaced>{% for letter in data.current %}{% if letter != "_" %}<span class="text-success">{% endif %}{{ letter }}{% if letter != "_" %}</span>{% endif %}{% endfor %}</h1>;
         //$('#current').text(inside);
         //there are no errors here, no no sir!
+        /*for (letter in data.current) {
+          console.log(data.current[letter]);
+        }*/
+        //I have no idea how this took me 3.5 hours to figure out (well 3.2 hours of failing and 15mins of writing the code below and working the first time
+        $('#current').html('');
+        for (letter in data.current) {
+          if (data.current[letter] != '_') {
+            $('#current').append('<span class="text-success">' + data.current[letter] + '</span>');
+          } else $('#current').append(data.current[letter]);
+        }
         
         /* Update errors */
         $('#errors').html(
@@ -47,6 +57,9 @@ $('#letter-form').submit(function(e) {
         /* Update drawing */
         //updateDrawing(data.errors);
         $('#hangman-drawing').children().slice(0, data.errors.length).show();
+        
+        /* Update quit button */
+        $('#but').html('<button class="btn btn-primary btn-lg" onclick="quit()">Quit</button>');
         
         /*flicker if invalid letter*/
         if (data.invalidLetter) {
@@ -64,31 +77,3 @@ $('#letter-form').submit(function(e) {
   });
   e.preventDefault();
 });
-
-//hangman drawing instance here
-/*function updateDrawing(errors) {
-  $('#hangman-drawing').children().slice(0, errors.length).show();
-}*/
-
-/*$('#letter-form').submit(function(e) {
-  var data = $("#letter-form").serialize();
-  
-  $('#letter-form input').val('');
-  
-  $.ajax({
-    type: "POST",
-    url: '',
-    data: data,
-    success: function(data) {
-      if (data.finished) {
-        location.reload();
-      }
-      else {
-        //$('#current').text(data.current);
-        const inside = <h1 id="current" class="spaced">{% for letter in data.current %}{% if letter != "_" %}<span class="text-success">{% endif %}{{ letter }}{% if letter != "_" %}</span>{% endif %}{% endfor %}</h1>;
-        $('#current').html(inside);
-      }
-    }
-  });
-  e.preventDefault();
-});*/

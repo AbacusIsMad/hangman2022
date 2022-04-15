@@ -56,7 +56,7 @@
   <h1 class="text-success spaced">P<span class="text-danger">LN</span>A<span class="text-danger">R</span>Y<span class="text-danger">W</span>E<span class="text-danger">N</span></h1>
 </div>
 
-<div id="errors" class="immune" style="position: relative; z-index: 1">
+<div id="errors" class="immune" style="position: relative; z-index: 1; cursor: pointer">
   <h2 class="vspace fade" onclick="positive('myPopup2'), initial0(), cycle0()" onmouseout="negative('myPopup2'), stopcycle0()">
     Errors (X/6):
     <span class="text-danger spaced" id="errorsc"></span>
@@ -121,9 +121,37 @@
     </div>
 </div>
 
+<div class="popup">
+  <span class="popuptext popuptext2" id="myPopup5" style="z-index: -1; bottom: 0px; left: 0px">The difficulty shortens the length of letters, and makes the time bonus tighter, but in exchange gives you massive bonuses to your points if you can guess the word in that time!</span>
+</div>
+<div id="spell" class="immune" style="width: 300px; left: 34%; position: relative; z-index: 2; cursor: pointer; top: -20px" onclick="positive('myPopup5'), initial1(), cycle1()" onmouseout="negative('myPopup5'), stopcycle1()">
+  <div class="fade">
+  <div><h3>Difficulty:<h3></div>
+  <div><h4>Time: 00:00<h4></div>
+  </div>
+</div>
+<div id="spell0" class="invis100" style="position: absolute; top: 610px; left: 50%; transform: translate( -50%, -50% )">
+  <div><h3>Difficulty: Easy<h3></div>
+  <div><h4>Time: <span class="text-success">01:00</span><h4></div>
+</div>
+<div id="spell1" class="invis100" style="position: absolute; top: 610px; left: 50%; transform: translate( -50%, -50% )">
+  <div><h3>Difficulty: Normal<h3></div>
+  <div><h4>Time: <span class="text-warning">00:40</span><h4></div>
+</div>
+<div id="spell2" class="invis100" style="position: absolute; top: 610px; left: 50%; transform: translate( -50%, -50% )">
+  <div><h3>Difficulty: Hard<h3></div>
+  <div><h4>Time: <span class="text-warning">00:30</span><h4></div>
+</div>
+<div id="spell3" class="invis100" style="position: absolute; top: 610px; left: 50%; transform: translate( -50%, -50% )">
+  <div><h3>Difficulty: Lunatic<h3></div>
+  <div><h4>Time: <span class="text-danger">00:15</span><h4></div>
+</div>
+<form action="{{ url_for('home') }}">
+<button class="btn btn-primary btn-lg" type="submit">Return</button>
+</form>
 
 
-<span class="fade">Gamer?</span>
+<!--span class="fade">Gamer?</span>
 
 
 
@@ -148,7 +176,7 @@
 <form action="{{ url_for('home') }}">
 <button class="btn btn-primary btn-lg" type="submit">Return</button>
 </form>
-<button onclick="alert('this is a popup!')">Lol</button>
+<button onclick="alert('this is a popup!')">Lol</button-->
 
 
 
@@ -158,7 +186,7 @@
 // When the user clicks on <div>, open the popup
 function positive(item) {
   var popup = document.getElementById(item);
-  if (item != "errors") {
+  if (!((item == "errors") || (item == "spell"))) {
     popup.classList.add("what");
   }
   if (popup.classList.contains("popuptext")) {
@@ -245,7 +273,7 @@ function initial0() {
   process0 = 1;
 }
 
-//here we serve-a beutifufull spaghet-a
+
 function cycle0() {
   if (timer0 || !process0) return;
   timer0 = 1;
@@ -259,9 +287,11 @@ function cycle0() {
       negative("errorsf0");
       positive("currentf1");
       positive("errorsf1");
+      positive("man");
       setTimeout(function () {if (timer0) {
         negative("currentf1");
         negative("errorsf1");
+        negative("man");
         if (timer0) {
           timer0 = 0;
           cycle0();
@@ -277,11 +307,61 @@ function stopcycle0() {
   negative("errorsf0");
   negative("currentf1");
   negative("errorsf1");
+  negative("man");
   positive("current");
   positive("errors");
   timer0 = 0
   process0 = 0
 }
-   
+
+//and another one. Yay!
+var timer1;
+var process1 = 0;
+
+function initial1() {
+  process1 = 1;
+}
+
+
+function cycle1() {
+  if (timer1 || !process1) return;
+  timer1 = 1;
+  if (timer1) {
+    negative("spell");
+    positive("spell0");
+    setTimeout(function () {if (timer1) {
+      negative("spell0");
+      positive("spell1");
+      setTimeout(function () {if (timer1) {
+        negative("spell1");
+        positive("spell2");
+        setTimeout(function () {if (timer1) {
+          negative("spell2");
+          positive("spell3");
+          setTimeout(function () {if (timer1) {
+            negative("spell3");
+            if (timer1) {
+              timer1 = 0;
+              cycle1();
+            }
+          } else return;}, 1000);
+        } else return;}, 1000);
+      } else return;}, 1000);
+    } else return;}, 1000);
+  } else return;
+}
+
+
+function stopcycle1() {
+  negative("spell0");
+  negative("spell1");
+  negative("spell2");
+  negative("spell3");
+  positive("spell");
+  timer1 = 0
+  process1 = 0
+}
+
+
 </script>
 {% endblock %}

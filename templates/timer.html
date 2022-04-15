@@ -7,6 +7,16 @@
   margin-bottom: 0px;
 }
 </style>
-<h4>Time: {{small}}</h4>
+<h4>Time: 
+{% if i == 0 %}
+<span>
+{% elif ((difficulty == 0) and (i <= 40)) or ((difficulty == 1) and (i <= 25)) or ((difficulty == 2) and (i <= 20)) or ((difficulty == 3) and (i <= 10)) %}
+<span class="text-success">
+{% elif ((difficulty == 0) and (i <= 60)) or ((difficulty == 1) and (i <= 40)) or ((difficulty == 2) and (i <= 30)) or ((difficulty == 3) and (i <= 15)) %}
+<span class="text-warning">
+{% else %}
+<span class="text-danger">
+{% endif %}
+{{small}}</span></h4>
 
 {% endblock %}

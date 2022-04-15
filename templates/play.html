@@ -14,10 +14,57 @@
 {% endif %}
 }
 
+.fade {
+  opacity: 1;
+  transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+}
+
+.fade:hover {
+  opacity: 0.5;
+}
+
+.invis100 {
+  opacity: 0;
+}
+
+.what {
+  opacity: 1;
+  -webkit-animation: fadeIn 500ms;
+  animation: fadeIn 500ms
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+
+.what2 {
+  opacity: 0;
+  -webkit-animation: fadeOut 500ms;
+  animation: fadeOut 500ms
+}
+
+@-webkit-keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+
+@keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
 </style>
   <body onload="refresher()">
-  {% if not game.finished or game.finished %}
-  <svg width="250" height="230" id="drawing">
+
+  <div>
+  <svg width="250" height="230" id="drawing" {% if game.finished %}class="invis100 what2"{% endif %}>
     <!-- Structure -->
     <line y1="220" y2="220" x1="10" x2="120" />
     <line y1="10" y2="220" x1="65" x2="65" />
@@ -34,13 +81,33 @@
       <line y1="80" y2="40" x1="188" x2="210" />
     </g>
   </svg>
-  {% else %}
-  
-  <span> What a gamer</span>
-  
-  
+  {% if game.finished %}
+  <div class="fade">
+  <table id="scores" class="table what" style="position: absolute; left: 27.6%; top: 0px; width: 250px; border: 1px solid; white-space: nowrap; z-index: 1; cursor: pointer;" onclick="positive('drawing'), negative('scores')" onmouseout="positive('scores'), negative('drawing')">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Score</th>
+    <tbody>
+      <tr>
+        <td>Unique letter score</td>
+        <td>30</td>
+      <tr>
+        <td>Error penalty</td>
+        <td>300</td>
+      <tr>
+        <td>Time bonus</td>
+        <td>3000</td>
+      <tr>
+        <td>Game fail penalty</td>
+        <td>3000</td>
+      <tr>
+        <th>Total</th>
+        <th>300</th>
+  </table>
+  </div>
   {% endif %}
-  
+  </div>
   {% if game.finished %}
     <h1>
       {% for letter in game.word %}
@@ -83,33 +150,78 @@
     </form>
   {% endif %}
   
-  <h3>Difficulty: {{difficulty}}</h3>
+  <h3>Difficulty: 
+  {% if difficulty == 0 %}
+  Easy
+  {% elif difficulty == 1 %}
+  Normal
+  {% elif difficulty == 2 %}
+  Hard
+  {% elif difficulty == 3 %}
+  Lunatic
+  {% endif %}
+  </h3>
 
   <iframe id="iframe" frameborder="0" noresize="noresize"
   style="padding: 0; background: transparent; width: 60%; height: 100px; 
   border:0px solid black; position: relative; top: -30px; z-index: -1" src="{{ url_for('bcontent', _=current_time)}}"></iframe>
+  
+  {% if not game.finished %}
+  <div id="but" class="vspace" style="position: relative; top: -50px">
+  <a href="{{ url_for('home') }}">
+  <button class="btn btn-primary btn-lg">Save and Quit</button>
+  </a>
+  </div>
+  {% endif %}
+  
   </body>
-  <script>
-  //refresh();
-  var cssLink = document.createElement("link");
-  cssLink.href = "timer.css"; 
-  cssLink.rel = "stylesheet"; 
-  cssLink.type = "text/css"; 
-  frames['iframe'].document.head.appendChild(cssLink);
-  var flag = 0;
-  function refresher() {
-    if (flag == 1) return; 
-    flag = 1;
-    setTimeout(refresh, 1000);
+<script>
+function quit() {
+  if (window.confirm('Are you sure you want to quit? Your streak will be lost as you have already started the game!')) {
+    window.location.href = "{{ url_for('home') }}";
   }
-  async function refresh() {
+}
+
+var cssLink = document.createElement("link");
+cssLink.href = "timer.css"; 
+cssLink.rel = "stylesheet"; 
+cssLink.type = "text/css"; 
+frames['iframe'].document.head.appendChild(cssLink);
+var flag = 0;
+function refresher() {
+  if (flag == 1) return; 
+  flag = 1;
+  setTimeout(refresh, 1000);
+}
+async function refresh() {
   //reload timer every second. This also moves the python variable forward!
   iframe.innerHTML = "Loading...";
   iframe.src = "{{ url_for('bcontent', _=current_time)}}";
   
   setTimeout(refresh, 1000);
+}
+  
+function positive(item) {
+  var popup = document.getElementById(item);
+  if (!((item == "drawingl") || (item == "spell"))) {
+    popup.classList.add("what");
   }
-  </script>
+  if (popup.classList.contains("popuptext")) {
+    popup.style.zIndex = "1";
+  }
+  setTimeout(popup.classList.remove("what2"), 1000);
+}
+function negative(item) {
+  var popup = document.getElementById(item);
+  if (popup.classList.contains("what") || popup.classList.contains("immune")) {
+    popup.classList.add("what2");
+  }
+  if (popup.classList.contains("popuptext")) {
+    setTimeout(popup.style.zIndex = "-1", 1000);
+  }
+  setTimeout(popup.classList.remove("what"), 1000);
+}
+</script>
 {% endblock %}
 
 {% block bottom %}

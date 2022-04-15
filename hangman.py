@@ -251,8 +251,11 @@ def database():
     reverse=(lastReq != hello) != (hello == 7 or hello == 13))[:10]
     return flask.render_template('database.html', games=games, hello=hello, lastReq=lastReq, recent=recent)
 
-@app.route('/instructions')
+@app.route('/instructions', methods = ['GET', 'POST'])
 def instructions():
+    
+    #if flask.request.method == 'POST':
+        #temp = int(flask.request.form['select'])
     return flask.render_template('instructions.html')
 
 @app.route('/play')
@@ -398,12 +401,13 @@ def play(game_id):
 def bcontent():
     global i
     global a
+    global difficulty
     i += a
     mins, secs = divmod((i), 60)
     small = "{:02d}:{:02d}".format(mins, secs)
     #pass small to render time, pass i to decide which color it is. I also have to pass difficulty here too.
     #maybe also show the time bonus?
-    return flask.render_template('timer.html', i=i, small=small)
+    return flask.render_template('timer.html', i=i, small=small, difficulty=difficulty)
 
 
 
