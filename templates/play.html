@@ -62,7 +62,10 @@
       </a>
     </p>
   {% else %}
-    <h1 id="current" class="spaced">{{ game.current }}</h1>
+    <!--h1 id="current" class="spaced">{{ game.current }}</h1-->
+    <h1 id="current" class="spaced">
+      {% for letter in game.current %}{% if letter != '_' %}<span class="text-success">{% endif %}{{ letter }}{% if letter != '_' %}</span>{% endif %}{% endfor %}
+    </h1>
   {% endif %}
 
   <h2 class="vspace" id="errors">
@@ -112,6 +115,7 @@
 {% block bottom %}
   <script src="{{ url_for('static', filename='main.js') }}"></script>
   <script>
-    updateDrawing('{{ game.errors }}');
+    //updateDrawing('{{ game.errors }}');
+    $('#hangman-drawing').children().slice(0, {{ game.errors|length }}).show();
   </script>
 {% endblock %}

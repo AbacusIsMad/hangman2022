@@ -40,53 +40,72 @@
   </svg>
 </div>
 <div class="popup">
-  <span class="popuptext popuptext1" id="myPopup3" style="z-index: -1; bottom: 120px; left: -100px">When players guesses an incorrect letter that is not in the word, the error counter will increase and another element of the 'hangman' will appear.</span>
+  <span class="popuptext popuptext1" id="myPopup3" style="z-index: -1; bottom: 120px; left: -200px">When players guesses an incorrect letter that is not in the word, the error counter will increase and another element of the 'hangman' will appear.</span>
 </div>
 
 <div>
-  <h1 id="current" class="spaced">_________</h1>
+  <h1 id="current" class="spaced immune">_________</h1>
 </div>
 <div style="position: absolute; top: 387px; left: 50%; transform: translate( -50%, -50% )">
-  <h1 id="currentp" class="spaced">P__AY_E_</h1>
+  <h1 id="currentp" class="spaced invis100">P__A_Y_E_</h1>
+</div>
+<div id="currentf0" class="invis100" style="position: absolute; top: 387px; left: 50%; transform: translate( -50%, -50% )">
+  <h1 class="text-success spaced">PLNARYWEN</h1>
+</div>
+<div id="currentf1" class="invis100" style="position: absolute; top: 387px; left: 50%; transform: translate( -50%, -50% )">
+  <h1 class="text-success spaced">P<span class="text-danger">LN</span>A<span class="text-danger">R</span>Y<span class="text-danger">W</span>E<span class="text-danger">N</span></h1>
 </div>
 
-<div id="errors" class="immune" style="position: relative">
-  <h2 class="vspace">
+<div id="errors" class="immune" style="position: relative; z-index: 1">
+  <h2 class="vspace fade" onclick="positive('myPopup2'), initial0(), cycle0()" onmouseout="negative('myPopup2'), stopcycle0()">
     Errors (X/6):
     <span class="text-danger spaced" id="errorsc"></span>
   </h2>
 </div>
-<div id="errors1" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+<div id="errorsf0" class="invis100" style="position: absolute; top: 446px; left: 50%; transform: translate( -50%, -50% )">
+  <h2 class="vspace">
+    You won!
+  </h2>
+</div>
+<div id="errorsf1" class="invis100" style="position: absolute; top: 446px; left: 50%; transform: translate( -50%, -50% )">
+  <h2 class="vspace">
+    You lost :(
+  </h2>
+</div>
+<div class="popup">
+  <span class="popuptext popuptext0" id="myPopup2" style="z-index: -1; bottom: -180px; left: 0px">If players make 6 errors, the hangman will display all elements and the game is over.<br><br>If you guess the word before the hangman is completed, you win!</span>
+</div>
+<div id="errors1" class="invis100" style="position: absolute; top: 446px; left: 50%; transform: translate( -50%, -50% )">
   <h2 class="vspace">
     Errors (1/6):
     <span class="text-danger spaced" id="errorsc">S</span>
   </h2>
 </div>
-<div id="errors2" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+<div id="errors2" class="invis100" style="position: absolute; top: 446px; left: 50%; transform: translate( -50%, -50% )">
   <h2 class="vspace">
     Errors (2/6):
     <span class="text-danger spaced" id="errorsc">RS</span>
   </h2>
 </div>
-<div id="errors3" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+<div id="errors3" class="invis100" style="position: absolute; top: 446px; left: 50%; transform: translate( -50%, -50% )">
   <h2 class="vspace">
     Errors (3/6):
     <span class="text-danger spaced" id="errorsc">ERS</span>
   </h2>
 </div>
-<div id="errors4" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+<div id="errors4" class="invis100" style="position: absolute; top: 446px; left: 50%; transform: translate( -50%, -50% )">
   <h2 class="vspace">
     Errors (4/6):
     <span class="text-danger spaced" id="errorsc">MERS</span>
   </h2>
 </div>
-<div id="errors5" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+<div id="errors5" class="invis100" style="position: absolute; top: 446px; left: 50%; transform: translate( -50%, -50% )">
   <h2 class="vspace">
     Errors (5/6):
     <span class="text-danger spaced" id="errorsc">AMERS</span>
   </h2>
 </div>
-<div id="errors6" class="invis100" style="position: absolute; top: 436px; left: 50%; transform: translate( -50%, -50% )">
+<div id="errors6" class="invis100" style="position: absolute; top: 446px; left: 50%; transform: translate( -50%, -50% )">
   <h2 class="vspace">
     Errors (6/6):
     <span class="text-danger spaced" id="errorsc">GAMERS</span>
@@ -96,7 +115,7 @@
 <div>
       <input class="input-lg text-uppercase" id="letterinput" maxlength="1" size="1"
         name="letter" autocomplete="off" autofocus>
-    <button id="btn" class="btn" onclick="positive('myPopup4')" onmouseout="negative('myPopup4')">Try letter</button>
+    <button id="btn" class="btn" onclick="positive('myPopup4'), negative('current'), positive('currentp')" onmouseout="negative('myPopup4'), negative('currentp'), positive('current')">Try letter</button>
     <div class="popup">
       <span class="popuptext popuptext3" id="myPopup4" style="z-index: -1; bottom: -50px; left: 100px">Players start by guessing a letter in the input box - each blank line signifies a letter in the word. <br>When you have entered the first valid letter, the timer starts.</span>
     </div>
@@ -139,7 +158,9 @@
 // When the user clicks on <div>, open the popup
 function positive(item) {
   var popup = document.getElementById(item);
-  popup.classList.add("what");
+  if (item != "errors") {
+    popup.classList.add("what");
+  }
   if (popup.classList.contains("popuptext")) {
     popup.style.zIndex = "1";
   }
@@ -175,33 +196,27 @@ function cycle() {
     positive("errors1");
     setTimeout(function() {if (timer) {
       positive("mang1"); 
-      //document.getElementById("errors").innerHTML = "Errors (2/6): <span class='text-danger spaced' id='errorsc'>RS</span>"
       negative("errors1");
       positive("errors2");
       setTimeout(function() {if (timer) {
         positive("mang2"); 
-        //document.getElementById("errors").innerHTML = "Errors (3/6): <span class='text-danger spaced' id='errorsc'>ERS</span>"
         negative("errors2");
         positive("errors3");
         setTimeout(function() {if (timer) {
           positive("mang3");
-          //document.getElementById("errors").innerHTML = "Errors (4/6): <span class='text-danger spaced' id='errorsc'>MERS</span>" 
           negative("errors3");
           positive("errors4");
           setTimeout(function() {if (timer) {
             positive("mang4"); 
-            //document.getElementById("errors").innerHTML = "Errors (5/6): <span class='text-danger spaced' id='errorsc'>AMERS</span>"
             negative("errors4");
             positive("errors5");
             setTimeout(function() {if (timer) {
               positive("mang5"); 
-              //document.getElementById("errors").innerHTML = "Errors (6/6): <span class='text-danger spaced' id='errorsc'>GAMERS</span>"
               negative("errors5");
             positive("errors6");
               setTimeout(function() {
               negative("mang0"), negative("mang1"), negative("mang2"), negative("mang3"), negative("mang4"), negative("mang5"); 
               positive("errors"), negative("errors1"), negative("errors2"), negative("errors3"), negative("errors4"), negative("errors5"), negative("errors6");
-              //document.getElementById("errors").innerHTML = "Errors (X/6): <span class='text-danger spaced' id='errorsc'></span>"
               if (timer) {
                 timer = 0;
                 setTimeout(cycle, 1000);
@@ -217,10 +232,56 @@ function cycle() {
 function stopcycle() {
   negative("mang0"), negative("mang1"), negative("mang2"), negative("mang3"), negative("mang4"), negative("mang5");
   positive("errors"), negative("errors1"), negative("errors2"), negative("errors3"), negative("errors4"), negative("errors5"), negative("errors6");
-  //document.getElementById("errors").innerHTML = "Errors (X/6): <span class='text-danger spaced' id='errorsc'></span>"
   timer = 0
   process = 0
 }
-    
+
+
+//doing the same thing again cos i didn't add configurability lol
+var timer0;
+var process0 = 0;
+
+function initial0() {
+  process0 = 1;
+}
+
+//here we serve-a beutifufull spaghet-a
+function cycle0() {
+  if (timer0 || !process0) return;
+  timer0 = 1;
+  if (timer0) {
+    negative("current");
+    negative("errors");
+    positive("currentf0");
+    positive("errorsf0");
+    setTimeout(function () {if (timer0) {
+      negative("currentf0");
+      negative("errorsf0");
+      positive("currentf1");
+      positive("errorsf1");
+      setTimeout(function () {if (timer0) {
+        negative("currentf1");
+        negative("errorsf1");
+        if (timer0) {
+          timer0 = 0;
+          cycle0();
+        }
+      } else return;}, 1000);
+    } else return;}, 1000);
+  } else return;
+}
+
+
+function stopcycle0() {
+  negative("currentf0");
+  negative("errorsf0");
+  negative("currentf1");
+  negative("errorsf1");
+  positive("current");
+  positive("errors");
+  timer0 = 0
+  process0 = 0
+}
+   
 </script>
 {% endblock %}
