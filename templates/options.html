@@ -1,6 +1,11 @@
 {% extends 'index.html' %}
 
 {% block content %}
+<style>
+.container {
+  width: 500px;
+}
+</style>
 <div style="position:relative; top: -20px">
 <h3>Welcome, {{ player }}!</h3>
 </div>
@@ -12,6 +17,34 @@
   <button class="btn btn-lg" type="submit" name="select" value="3" {% if difficulty == 3 %}style="background-color:red"{% endif %}>Lunatic</button>
   <button class="btn btn-lg" type="submit" name="select" value="-1">Play</button>
 </form>
+
+<div class="vspace">
+{% if difficulty == 0 %}
+<h3>The most forgiving mode.<br><br></h3>
+<h4>Long letter lengths, more time for you to<br>
+earn time bonuses, though the bonuses<br>
+are quite small compared to other modes.</h4>
+{% elif difficulty == 1 %}
+<h3>Normal mode, not so normal though.<br><br></h3>
+<h4>Shorter lengths makes it harder<br>
+to guess letters, and the increased<br>
+scores don't exactly make up for<br>
+it either.</h4>
+{% elif difficulty == 2 %}
+<h3>You will have difficulty with this.<br><br></h3>
+<h4>During testing we have played this<br>
+game hundreds of times and have even<br>
+gotten the same words 3 times. Still,<br>
+there is no way I can do this.</h4>
+{% elif difficulty == 3 %}
+<h3>Unforgiving, but the machine doesn't care.<br><br></h3>
+<h4>It's weird that the original code<br>
+restricted the word length to 10 letters,<br>
+even though that is only a fraction of<br>
+the file. Maybe there is a reason.</h4>
+{% endif %}
+</div>
+
 
 <div class="vspace">
 <a href="{{ url_for('home') }}">
