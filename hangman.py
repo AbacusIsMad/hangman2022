@@ -9,6 +9,7 @@ import signal
 import subprocess
 import time
 import math
+import numpy
 import string
 
 
@@ -16,6 +17,10 @@ file_path = ''
 #executable connects to a stable database that persists when used as a onefile.
 def base_path(path):
     dir_path = os.path.join(os.environ['HOME'], 'hangman')
+    #if getattr(sys, 'frozen', None):
+    #    dir_path = os.path.join(os.path.dirname(sys.executable), 'hangmandb')
+    #else:
+    #    dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'hangmandb')
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     global file_path
@@ -74,13 +79,13 @@ def random_pk():
 def random_word():
     global difficulty
     secret = Game.query.filter_by(player=".secret").limit(1).first()
-    if (secret.ongoing == 0):
-        words = [line.strip() for line in open('words.txt') if ((len(line) > (10 - 3 * difficulty)) & (len(line) < 13 - 3 * difficulty))]
-    else: #shh
-        words = ""
-        for i in range(random.randint(11, 18)):
-            words += random.choice(string.ascii_letters)
-        return words.upper()
+    words = [line.strip() for line in open('words.txt') if ((len(line) > (10 - 3 * difficulty)) & (len(line) < 13 - 3 * difficulty))]
+    if (secret is not None): 
+        if (secret.ongoing == 1):
+            words = ""
+            for i in range(random.randint(11, 18)):
+                words += random.choice(string.ascii_letters)
+            return words.upper()
     return random.choice(words).upper()
 
 #g = [line.strip() for line in open('words.txt') if len(set(line)) > 13]
@@ -103,6 +108,8 @@ class Game(db.Model):
     takenhiddenlatest = db.Column(db.Integer, default = 0)
     takencpy = db.Column(db.String(50), default='')
     takenhiddencpy = db.Column(db.Integer, default = 0)
+    pointslatest = db.Column(db.Integer, default = 0)
+    pointscpy = db.Column(db.Integer, default = 0)
     ongoing = db.Column(db.Integer, default = 0)
     
     """also store word and tried in a copied location. The server should display the copied ones.
@@ -142,8 +149,18 @@ class Game(db.Model):
     @property
     def points(self):
         #set() gives a set with no repetitions, basically the number of unique letters in the word.
-        return 100*(self.tried != '') + 2*len(set(self.word)) + len(self.word) - 10*len(self.errors)
-        #return 100 + 2 * (14 - len(set(self.word)))
+        #return 100*(self.tried != '') + 2*len(set(self.word)) + len(self.word) - 10*len(self.errors)
+        
+        if (len(set(self.word)) >= 4):
+            base_score = round(100 + 10 * (14 ** (1/2.2) - ((len(set(self.word)) - 4) ** (1/2.2))) + (len(set(self.word)) ** 1.3))
+        else: #rip i forgot complex numbers existed
+            base_score = round(100 + 10 * (14 ** (1/2.2) + ((-len(set(self.word)) + 4) ** (1/2.2))) + (len(set(self.word)) ** 1.3))
+        time_bonus = round((50 + 40 * (difficulty ** 2) - 2 * len(set(self.word)) - math.exp(3 * (len(set(self.word)) - 50 + difficulty * 10)))/10)
+        time_bonus = round(time_bonus / 2 + abs(time_bonus / 2))
+        error_penalty = -time_bonus + round(time_bonus / ((len(self.errors) + 1) ** 2)) - round((1 - 0.84 * self.lost) * len(self.errors) * (len(set(self.word))) / 1.3)
+        game_penalty = round(-(0.6 * base_score) * (self.lost))
+        print("score determined! ", [base_score, time_bonus, error_penalty, game_penalty])
+        return [base_score, time_bonus, error_penalty, game_penalty]
         """
         NEW SCORING SYSTEM
         has 4 factors: number of unique letters in words, proportion of those words that have been guessed,
@@ -162,13 +179,6 @@ class Game(db.Model):
         +errors^(1/b)*p*(maxtime - timetaken), p = penalty multiplier
         Might add difficulty into account, I'm not sure.
         """
-
-    @property
-    def pointscpy(self):
-        return 100*(self.triedcpy != '') + 2*len(set(self.wordcpy)) + len(self.wordcpy) - 10*len(self.errorscpy)
-    @property
-    def pointslatest(self):
-        return 100*(self.triedlatest != '') + 2*len(set(self.wordlatest)) + len(self.wordlatest) - 10*len(self.errorslatest)
 
     # Play
 
@@ -262,7 +272,7 @@ def database():
     key=lambda game: globals()["lent" + "h" * (hello != 5)]
     (getattr(game, seethe[hello] + mald[recent] * (hello == 3 or hello == 5 or hello == 7 or hello == 11))),
     reverse=(lastReq != hello) != (hello == 7 or hello == 13))[:10]
-    return flask.render_template('database.html', games=games, hello=hello, lastReq=lastReq, recent=recent)
+    return flask.render_template('database.html', games=games, hello=hello, lastReq=lastReq, recent=recent, where=os.path.dirname(os.path.abspath(__file__)))
 
 @app.route('/instructions', methods = ['GET', 'POST'])
 def instructions():
@@ -316,7 +326,7 @@ def nearly(player):
         game.playerlower = game.player.lower()
     global i
     i = 0
-    
+    print("game.word = ", game.word)
     db.session.add(game)
     game.ongoing = 1
     db.session.commit()
@@ -335,12 +345,12 @@ def options(player):
             return flask.redirect(flask.url_for('nearly', player=player))
         
         print("difficulty is ", difficulty)
-        return flask.render_template('options.html', difficulty=difficulty)
+        return flask.render_template('options.html', difficulty=difficulty, player=player)
     elif flask.request.method == 'GET':
         pass
         #return flask.redirect(flask.url_for('temp', player=player))
     #return flask.redirect(flask.url_for('options', player=player))
-    return flask.render_template('options.html', difficulty=difficulty)
+    return flask.render_template('options.html', difficulty=difficulty, player=player)
     
 
 #@app.route('/play/<game_id>/<a>', methods=['GET', 'POST'])
@@ -375,11 +385,14 @@ def play(game_id):
                 #update word
                 game.wordlatest = game.word
                 game.triedlatest = game.tried
+                
+                game.pointslatest = sum(list(game.points))
                 #update time taken
                 game.takenhiddenlatest = i
                 mins, secs = divmod(i, 60)
                 game.takenlatest = "{:02d}:{:02d}".format(mins, secs)                
-                if (game.points >= game.pointscpy):
+                if (sum(list(game.points)) >= game.pointscpy):
+                    game.pointscpy = sum(list(game.points))
                     game.wordcpy = game.word
                     game.triedcpy = game.tried
                     game.takencpy = game.takenlatest
@@ -432,19 +445,21 @@ def bcontent():
 
 #based
 def based_path(path):
-    if (__file__ == "hangman.py"):
-        print("it is in development!")
-        return "."
+    print("path: ", os.path.abspath(__file__))
+    #if (__file__ == "hangman.py"):
+    #    print("it is in development!")
+    #    return "."
     if getattr(sys, 'frozen', None):
     	basedir = sys._MEIPASS
     else:
-    	basedir = os.path.dirname(__file__)
+    	basedir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(basedir, path)
 
 
 if __name__ == '__main__':
     #changes directory if in production
     os.chdir(based_path(''))
+
 
     #kill port
     port = 42069

@@ -1,18 +1,21 @@
-{% extends 'index2.html' %}
+{% extends 'index.html' %}
 
 {% block content %}
+<div style="position:relative; top: -20px">
+<h3>Welcome, {{ player }}!</h3>
+</div>
 
 <form method="post">
-<button type="submit" name="select" value="0" {% if difficulty == 0 %}style="background-color:red"{% endif %}>Easy</button>
-<button type="submit" name="select" value="1" {% if difficulty == 1 %}style="background-color:red"{% endif %}>Normal</button>
-<button type="submit" name="select" value="2" {% if difficulty == 2 %}style="background-color:red"{% endif %}>Hard</button>
-<button type="submit" name="select" value="3" {% if difficulty == 3 %}style="background-color:red"{% endif %}>Lunatic</button>
-<button type="submit" name="select" value="-1">Play</button>
-
-<!--input type="submit" name="select" value="0">
-<input type="submit" name="select" value="1">
-<input type="submit" name="select" value="2"-->
-<span>{{difficulty}}</span>
+  <button class="btn btn-lg" type="submit" name="select" value="0" {% if difficulty == 0 %}style="background-color:red"{% endif %}>Easy</button>
+  <button class="btn btn-lg" type="submit" name="select" value="1" {% if difficulty == 1 %}style="background-color:red"{% endif %}>Normal</button>
+  <button class="btn btn-lg" type="submit" name="select" value="2" {% if difficulty == 2 %}style="background-color:red"{% endif %}>Hard</button>
+  <button class="btn btn-lg" type="submit" name="select" value="3" {% if difficulty == 3 %}style="background-color:red"{% endif %}>Lunatic</button>
+  <button class="btn btn-lg" type="submit" name="select" value="-1">Play</button>
 </form>
 
+<div class="vspace">
+<a href="{{ url_for('home') }}">
+  <button class="btn btn-primary btn-lg">Quit to Home</button>
+</a>
+</div>
 {% endblock %}

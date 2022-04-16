@@ -61,7 +61,7 @@
   to {opacity: 0;}
 }
 </style>
-  <body onload="refresher(), rand()">
+  <body onload="refresher(), rand(9, 50, 'dif'){% if secret %}, rand(7, 9, 's0'), rand(7, 9, 's1'), rand(7, 9, 's2'), rand(7, 9, 's3'), rand(7, 9, 's4'){% endif %}">
 
   <div>
   <svg width="250" height="230" id="drawing" {% if game.finished %}class="invis100 what2"{% endif %}>
@@ -85,25 +85,25 @@
   <div class="fade">
   <table id="scores" class="table what" style="position: absolute; left: 27.6%; top: 0px; width: 250px; border: 1px solid; white-space: nowrap; z-index: 1; cursor: pointer;" onclick="positive('drawing'), negative('scores')" onmouseout="positive('scores'), negative('drawing')">
     <thead>
-      <tr>
+      <tr style="background: lightblue">
         <th>Category</th>
         <th>Score</th>
     <tbody>
       <tr>
         <td>Unique letter score</td>
-        <td>30</td>
-      <tr>
-        <td>Error penalty</td>
-        <td>300</td>
+        <td id="s0"{% if game.points[0] > 139 %} class="text-success"{% else %} class="text-warning"{% endif %}>{{ game.points[0] }}</td>
       <tr>
         <td>Time bonus</td>
-        <td>3000</td>
+        <td id="s1"{% if game.points[1] > 9 %} class="text-success"{% else %} class="text-warning"{% endif %}>{{ game.points[1] }}</td>
+      <tr>
+        <td>Error penalty</td>
+        <td id="s2"{% if game.points[2] > -1 %} class="text-success"{% else %} class="text-danger"{% endif %}>{{ game.points[2] }}</td>
       <tr>
         <td>Game fail penalty</td>
-        <td>3000</td>
-      <tr>
+        <td id="s3"{% if game.points[3] > -1 %} class="text-success"{% else %} class="text-danger"{% endif %}>{{ game.points[3] }}</td>
+      <tr style="background: lightgray">
         <th>Total</th>
-        <th>300</th>
+        <th id="s4">{{ game.points[0] + game.points[1] + game.points[2] + game.points[3] }}</th>
   </table>
   </div>
   {% endif %}
@@ -181,14 +181,17 @@ function quit() {
   }
 }
 
-function rand() {
-  var text = "Difficulty: ";
-  var cycle = 9 + Math.floor(Math.random() * 40);
+function rand(min, max, loc) {
+  var text = "";
+  if (loc == "dif") {
+    text = "Difficulty: ";
+  }
+  var cycle = min + Math.floor(Math.random() * (max-min));
   for (var i = 0; i < cycle; i++) {
     text += String.fromCharCode(Math.floor(Math.random() * 4096));
   }
   if ({{ secret }} == 1) {
-    document.getElementById("dif").innerHTML = text;
+    document.getElementById(loc).innerHTML = text;
   }
 }
 

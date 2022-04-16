@@ -82,7 +82,7 @@
 <form action="{{ url_for('new_game') }}" class="form-inline popup" style="top: -20px">
   <div class="form-group vspace">
     <input name="player" class="input-lg" required="required"
-      placeholder="Your name">
+      placeholder="Your name" autocomplete="off">
     <span class="popuptext{% if m == 1 %} what2{% endif %}" id="myPopup", onclick="negative('myPopup')">Player name must only contain letters!</span>
       <button class="btn btn-primary btn-lg" type="submit">Play!</button>
   </div>

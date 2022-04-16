@@ -59,7 +59,9 @@ $('#letter-form').submit(function(e) {
         $('#hangman-drawing').children().slice(0, data.errors.length).show();
         
         /* Update quit button */
-        $('#but').html('<button class="btn btn-primary btn-lg" onclick="rand(), quit()">Quit</button>');
+        $('#but').html('<button class="btn btn-primary btn-lg" onclick="quit()">Quit</button>');
+        
+        rand(9, 50, "dif");
         
         /*flicker if invalid letter*/
         if (data.invalidLetter) {
