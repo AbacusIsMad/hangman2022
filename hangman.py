@@ -13,26 +13,30 @@ import numpy
 import string
 
 
-file_path = ''
+#file_path = ''
 #executable connects to a stable database that persists when used as a onefile.
 def base_path(path):
-    dir_path = os.path.join(os.environ['HOME'], 'hangman')
+    #dir_path = os.path.join(os.environ['HOME'], 'hangman')
+    if getattr(sys, 'frozen', None):
+        dir_path = os.path.join(os.path.dirname(sys.executable), 'hangman')
+    else:
+        dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'hangman')
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-    global file_path
+    #global file_path
     file_path = os.path.join(dir_path, 'hangman.db')
-    return dir_path
+    return file_path
 
 if __name__ == '__main__':
     app = flask.Flask(__name__)
-    base_path('')
+    #base_path('')
     
     #connect to development db (inside directory)
     #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./hangman.db'
     
     #connect to deployment db
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + file_path
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + base_path('')
     
     db = SQLAlchemy(app)
 
@@ -75,7 +79,7 @@ def random_pk():
 def random_word():
     global difficulty
     secret = Game.query.filter_by(player=".secret").limit(1).first()
-    words = [line.strip() for line in open('words.txt') if ((len(line) > (10 - 3 * difficulty)) & (len(line) < 13 - 3 * difficulty))]
+    words = [line.strip() for line in open('words.txt') if ((len(line) > (9 - 3 * difficulty)) & (len(line) < 18 - 5 * difficulty))]
     if (secret is not None): 
         if (secret.ongoing == 1):
             words = ""
@@ -90,7 +94,8 @@ def random_word():
 class Game(db.Model):
     #cpy stores highest score, latest stores latest score
     pk = db.Column(db.Integer, primary_key=True, default=random_pk)
-    word = db.Column(db.String(50), default=random_word)
+    #word = db.Column(db.String(50), default=random_word)
+    word = db.Column(db.String(50), default='')
     tried = db.Column(db.String(50), default='')
     player = db.Column(db.String(50))
     playerlower = db.Column(db.String(50))
@@ -315,13 +320,14 @@ def nearly(player):
 
         #reroll random word for new game, and reset the game status as well. 
         #(resetting word and tried should do it.)
-        game.word = random_word()
+        #game.word = random_word()
         game.tried = ''
     else: #create new player object
         game = Game(player)
         game.playerlower = game.player.lower()
     global i
     i = 0
+    game.word = random_word()
     print("game.word = ", game.word)
     db.session.add(game)
     game.ongoing = 1

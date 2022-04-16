@@ -5,6 +5,12 @@
   <link rel="stylesheet" type="text/css" href="static/instructions.css">
 </head>
 
+<style>
+.container {
+  width: 700px;
+}
+</style>
+
 </div id="main_drawing" class="popup">
   <svg width="250" height="230" id="drawing" onmouseover="positive('behind')" onclick="initial(), cycle(), positive('myPopup3')" onmouseout="negative('behind'), negative('myPopup3'), stopcycle()">
     <!-- Structure -->
@@ -124,7 +130,7 @@
 <div class="popup">
   <span class="popuptext popuptext2" id="myPopup5" style="z-index: -1; bottom: 0px; left: 0px">The difficulty shortens the length of letters, and makes the time bonus tighter, but in exchange gives you massive bonuses to your points if you can guess the word in that time!</span>
 </div>
-<div id="spell" class="immune" style="width: 300px; left: 34%; position: relative; z-index: 2; cursor: pointer; top: -20px" onclick="positive('myPopup5'), initial1(), cycle1()" onmouseout="negative('myPopup5'), stopcycle1()">
+<div id="spell" class="immune" style="position: relative; z-index: 2; cursor: pointer; top: -20px" onclick="positive('myPopup5'), initial1(), cycle1()" onmouseout="negative('myPopup5'), stopcycle1()">
   <div class="fade">
   <div><h3>Difficulty:<h3></div>
   <div><h4>Time: 00:00<h4></div>
