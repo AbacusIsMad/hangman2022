@@ -17,10 +17,6 @@ file_path = ''
 #executable connects to a stable database that persists when used as a onefile.
 def base_path(path):
     dir_path = os.path.join(os.environ['HOME'], 'hangman')
-    #if getattr(sys, 'frozen', None):
-    #    dir_path = os.path.join(os.path.dirname(sys.executable), 'hangmandb')
-    #else:
-    #    dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'hangmandb')
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     global file_path
@@ -272,7 +268,7 @@ def database():
     key=lambda game: globals()["lent" + "h" * (hello != 5)]
     (getattr(game, seethe[hello] + mald[recent] * (hello == 3 or hello == 5 or hello == 7 or hello == 11))),
     reverse=(lastReq != hello) != (hello == 7 or hello == 13))[:10]
-    return flask.render_template('database.html', games=games, hello=hello, lastReq=lastReq, recent=recent, where=os.path.dirname(os.path.abspath(__file__)))
+    return flask.render_template('database.html', games=games, hello=hello, lastReq=lastReq, recent=recent)
 
 @app.route('/instructions', methods = ['GET', 'POST'])
 def instructions():
@@ -445,7 +441,6 @@ def bcontent():
 
 #based
 def based_path(path):
-    print("path: ", os.path.abspath(__file__))
     #if (__file__ == "hangman.py"):
     #    print("it is in development!")
     #    return "."
@@ -459,7 +454,6 @@ def based_path(path):
 if __name__ == '__main__':
     #changes directory if in production
     os.chdir(based_path(''))
-
 
     #kill port
     port = 42069
