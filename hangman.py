@@ -11,21 +11,51 @@ import time
 import math
 import numpy
 import string
+import sqlalchemy.exc
+import sqlalchemy_utils.functions
 
-
-#file_path = ''
+#indicate creation errors.
+global errno
+errno = 0
+global fatal
+fatal = 0
+file_path = ''
+dir_path = ''
 #executable connects to a stable database that persists when used as a onefile.
 def base_path(path):
     #dir_path = os.path.join(os.environ['HOME'], 'hangman')
+    global file_path, dir_path, errno
     if getattr(sys, 'frozen', None):
         dir_path = os.path.join(os.path.dirname(sys.executable), 'hangman')
     else:
         dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'hangman')
+        #dir_path = os.path.join('/hangman0', 'hangman')
+    
+    #checking if permissions allow me to create separate db
+    #if the database already exists
+    print("Can I write to database file?", os.access(file_path, os.W_OK)) #this is good
+    print("Can I write to database parent file?", os.access(dir_path, os.W_OK)) #this is not good
+    #both the above needs to be true
+    #if either of them dont exist, I check by creating the dir, then if it is already there, seeing if the dir is writable. Again both of them needs to be true.
     if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-    #global file_path
+        try:
+            os.makedirs(dir_path)
+        except PermissionError:
+            print("failed to make file! Defaulting to current directory.")
+            dir_path = '.'
+            errno = 1
+    elif not os.access(dir_path, os.W_OK):
+        print("directory is not writable! Defaulting to current directory.")
+        dir_path = '.' 
+        errno = 1  
     file_path = os.path.join(dir_path, 'hangman.db')
     return file_path
+
+#os.path.isfile
+#FileExistsError
+#PermissionError
+
+
 
 if __name__ == '__main__':
     app = flask.Flask(__name__)
@@ -37,8 +67,10 @@ if __name__ == '__main__':
     #connect to deployment db
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + base_path('')
-    
     db = SQLAlchemy(app)
+    print("valid database? ", sqlalchemy_utils.functions.database_exists(app.config['SQLALCHEMY_DATABASE_URI']))
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./hangman.db'
+    #db = SQLAlchemy(app)
 
 #globals() can see these names now
 def lent(item):
@@ -112,6 +144,7 @@ class Game(db.Model):
     pointslatest = db.Column(db.Integer, default = 0)
     pointscpy = db.Column(db.Integer, default = 0)
     ongoing = db.Column(db.Integer, default = 0)
+    #extra = db.Column(db.Integer, default = 0)
     
     """also store word and tried in a copied location. The server should display the copied ones.
     the copy is only updated if the game is finished and redirected to home.
@@ -186,6 +219,7 @@ class Game(db.Model):
     def try_letter(self, letter):
         if not self.finished and letter not in self.tried:
             self.tried += letter
+            print("tried letters: ", self.tried)
             db.session.commit()
 
     # Game status
@@ -202,14 +236,89 @@ class Game(db.Model):
     def finished(self):
         return self.won or self.lost
 
-#create table if it does not exist
-db.create_all()
-secret = Game.query.filter_by(player=".secret").limit(1).first()
-if (secret is None):
+#create table if it does not exist. TODO: add permission protection here!
+#sudo mv /home/elec1005/Downloads/hangman2022/dist/hangmang /hangmang
+
+"""try:
+    db.create_all()
+    secret = Game.query.filter_by(player=".secret").limit(1).first()
+    if (secret is None):
+        secretg = Game(".secret")
+        secretg.ongoing = 0
+        db.session.add(secretg)
+        db.session.commit()
+except (sqlalchemy.exc.OperationalError, sqlalchemy.exc.DatabaseError):
+    print("database is invalid!")
+    if (True or getattr(sys, 'frozen', None)):
+    #the executable treats this by simply redirecting
+        print("redirecting to internal database!")
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./hangman.db'
+        db = SQLAlchemy(app)
+        print("created app!")
+        db.create_all()
+        secret = Game.query.filter_by(player=".secret").limit(1).first()
+        if (secret is None):
+            secretg = Game(".secret")
+            secretg.ongoing = 0
+            db.session.add(secretg)
+            db.session.commit()
+        errno = 1
+    else:
+    #the script shows a warning
+        print("invalid database in production will result in a fatal error.")
+        fatal = 1"""
+        
+#db.create_all()   
+#rip spent like 3 hours on the last day here to replicate ONE built in method
+#new cleaner method now.
+#does the file exist at that location?
+print("database exists?", os.access(file_path, os.F_OK))
+"""if not (os.access(file_path, os.F_OK)):
+    print("creating new database...")
+    db.create_all()
     secretg = Game(".secret")
     secretg.ongoing = 0
     db.session.add(secretg)
-    db.session.commit()
+    db.session.commit()"""
+#well it exists, but is it valid?
+if not (sqlalchemy_utils.functions.database_exists(app.config['SQLALCHEMY_DATABASE_URI'])):
+    if not (os.access(file_path, os.F_OK)):
+        print("creating new database...")
+        db.create_all()
+        secretg = Game(".secret")
+        secretg.ongoing = 0
+        db.session.add(secretg)
+        db.session.commit()
+    #okay its not valid, do something about it.
+    elif (False or getattr(sys, 'frozen', None)):
+        print("database is invalid!")
+        print("redirecting to internal database!")
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./hangman.db'
+        print("created app!")
+        db.create_all()
+        secret = Game.query.filter_by(player=".secret").limit(1).first()
+        if (secret is None):
+            secretg = Game(".secret")
+            secretg.ongoing = 0
+            db.session.add(secretg)
+            db.session.commit()
+        errno = 1
+    else:
+    #the script shows a warning
+        print("invalid database in production will result in a fatal error.")
+        fatal = 1
+
+
+
+#os.F_OK
+print("Can I write to database file now?", os.access(file_path, os.W_OK))
+print("Can I write to database parent file now?", os.access(dir_path, os.W_OK))
+#secret = Game.query.filter_by(player=".secret").limit(1).first()
+#if (secret is None):
+    #secretg = Game(".secret")
+    #secretg.ongoing = 0
+    #db.session.add(secretg)
+    #db.session.commit()
 
 # Controller
 
@@ -220,10 +329,13 @@ def home():
     #invalid player check
     m = 0;
     global invalidPlayer
+    global file_path
     if invalidPlayer == 1:
         m = 1
     invalidPlayer = 0
         #displays everyone, if they have finished the game at least once, to prevent blanks
+    if (fatal == 1):
+        return flask.render_template('home.html', m = m, errno = errno, fatal = fatal, file_path = os.path.abspath(file_path))
     for bruh in Game.query.all():
         #resets streak if cheating is detected part 1
         #print(bruh.tried != bruh.triedlatest, bruh.tried != '', bruh.ongoing == 1)
@@ -236,7 +348,7 @@ def home():
     #if game.won
 
     #whatever I return here, I can use in frontend.
-    return flask.render_template('home.html', m = m)
+    return flask.render_template('home.html', m = m, errno = errno, fatal = fatal, file_path = os.path.abspath(file_path))
 
 @app.route('/database', methods = ['GET', 'POST'])
 def database():
@@ -295,7 +407,7 @@ def new_game():
     
     #checking if the name is valid - letters only, no spaces or symbols.
     for k in range(len(player)):
-        if not ((65 <= ord(player[k]) <= 90) or (97 <= ord(player[k]) <= 122)):
+        if not ((65 <= ord(player[k]) <= 90) or (97 <= ord(player[k]) <= 122) or (player[k] == ' ')):
             invalidPlayer = 1
             return flask.redirect(flask.url_for('home'))
         if (k > 15):
@@ -415,11 +527,12 @@ def play(game_id):
                 game.ongoing = 0
                 db.session.commit()
             else:
-                print("progress not yet saved")
+                pass
+                #print("progress not yet saved")
         else:
             invalidLetter = 1        
     if flask.request.is_xhr:
-        print("parsing request!")
+        #print("parsing request!")
         return flask.jsonify(current=game.current,
                              errors=game.errors,
                              finished=game.finished, invalidLetter=invalidLetter)
@@ -456,7 +569,7 @@ def based_path(path):
     	basedir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(basedir, path)
 
-
+print(fatal, errno)
 if __name__ == '__main__':
     #changes directory if in production
     os.chdir(based_path(''))
@@ -473,7 +586,7 @@ if __name__ == '__main__':
         print("port killed!")
 
     #wait a bit for game to load, then open browser.
-    threading.Timer(1.5, lambda: webbrowser.open("http://0.0.0.0:" + str(port))).start()
+    threading.Timer(2, lambda: webbrowser.open("http://0.0.0.0:" + str(port))).start()
     #print(globals())
     #app.run(host='0.0.0.0', port=port, debug=False)
     app.run(host=os.getenv('IP', '0.0.0.0'), 
